@@ -17,7 +17,25 @@ class DatabaseLayer
     {
         
 	}
-	
+	public function GetUserID($email)
+	{
+		$query = $this->db->prepare("SELECT id FROM eb_users WHERE email=:email");
+        $query->bindValue(':email',$email);
+        $query->execute();
+		$rows = $query->fetch(PDO::FETCH_ASSOC);
+		return $rows["id"];
+
+	}
+	public function GetActiveOrders()
+	{
+		$query = $this->db->prepare("SELECT id FROM eb_orders WHERE ebakkal_id = :ebakkal_id AND durum = 1");
+        $query->bindValue(':ebakkal_id',$this->GetUserID($_SESSION["LoginUser"]));
+        $query->execute();
+		$rows = $query->fetchAll(PDO::FETCH_ASSOC);
+		if(count($rows)>0)
+			echo '<span class="badge badge-pill badge-warning">'.count($rows).'</span>';
+		
+	}
 	public function Ekle()
 	{
 		$query = $this->db->prepare("INSERT INTO eb_users (email,password) VALUES('mk112','1234566')");

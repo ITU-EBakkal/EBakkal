@@ -20,23 +20,28 @@ class DesignPanel
         <div class="col-sm-9">
         <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
-          <a class="nav-link active" data-toggle="tab" href="#home" role="tab">Ürün Gir</a>
+          <a class="nav-link active" data-toggle="tab" href="#addProduct" role="tab">Ürün Gir</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#profile" role="tab">Sipariş Takip</a>
+          <a class="nav-link" data-toggle="tab" href="#checkOrders" role="tab">Sipariş Takip'; 
+          $this->DbLayer->GetActiveOrders();
+          echo '</a>
         </li>
       </ul>
       
       <!-- Tab panes -->
       <div class="tab-content">
-        <div class="tab-pane active" id="home" role="tabpanel">
+        <div class="tab-pane active" id="addProduct" role="tabpanel">
         ';
         $this->AddProduct();
         echo '
         </div>
-        <div class="tab-pane" id="profile" role="tabpanel">Sipariş Takip Ekranı</div>
+        <div class="tab-pane" id="checkOrders" role="tabpanel">
+        Mert
         
-      </div>
+        </div>
+        
+       </div>
         </div>
     ';
     }
@@ -77,17 +82,35 @@ class DesignPanel
     public function AddProduct()
     {
         echo '
-              <div style="margin-top:20px;" class="form-group">
+              <div style="margin-top:20px;" class="form-group" enctype="multipart/form-data">
                  <form action="index.php?Pg=AddProductControl" method="post">
-                     <input type="text" name="urunadi"  class="form-control" style="margin-right:5px;margin-left:5px;;width:40%" id="eklemeurunadi" aria-describedby="emailHelp" placeholder="Ürün Adı">
+                     <input type="text" name="urunadi" class="form-control" style="padding-right:15px;padding-left:15px;" id="eklemeurunadi" aria-describedby="emailHelp" placeholder="Ürün Adı">
                      <div class="p-1"></div>
-                     <input type="text" name="ucret" class="form-control" style="margin-right:5px;margin-left:5px;;width:40%" id="eklemeucret" placeholder="Ücret">
+                     <div style="padding-right:5px;" class="input-group">
+                        <input type="number" min="0.001" step="0.01" class="form-control" aria-label="Ürün Ücreti">
+                        <span class="input-group-addon">TL</span>
+                        <span class="input-group-addon">0,00</span>
+                    </div>
+                    <div style="margin-bottom:0px;margin-top:5px;">
+                        Kategori :
+                        <select class="custom-select form-control-lg">
+                        <option style="color:red;" disabled>Temel Gıda</option>
+ 
+                        <option>Kahvaltılık</option>
+                        <option>Meyve&Sebze</option>
+                        <option>İçeçek</option>
+                        <option>Tatlı&Şeker</option>
+                        <option>Temel Gıda Diğer</option>
+                        </select>
+                    
+                        </div>
                      <div class="p-1"></div>
-                     <input type="text" name="stoksayisi"  class="form-control" style="margin-right:5px;margin-left:5px;;width:40%" id="eklemestoksayisi" aria-describedby="emailHelp" placeholder="Stok Sayisi">
+                     <input type="number" step="1" name="stoksayisi"  class="form-control" style="padding-right:15px;padding-left:15px;" id="eklemestoksayisi" aria-describedby="emailHelp" placeholder="Stok Sayisi">
                      <div class="p-1"></div>
-                     <input type="text" name="aciklama"  class="form-control" style="margin-right:5px;margin-left:5px;;width:50% ; height: 3cm" id="eklemeaciklama" aria-describedby="emailHelp" placeholder="Açiklama">
+                     <label class="btn btn-primary"> Görsel Seç <input type="file" name="resim" hidden></label>
+                     <textarea name="aciklama" class="form-control" style="padding-right:15px;padding-left:15px; rows="3" id="eklemeaciklama" placeholder="Açıklama"></textarea>
                      <div class="p-1"></div>
-                     <div style="align-items:center; justify-content: center;display: flex;"><button type="submit" style="cursor:pointer;" role="button" class="btn btn-primary btn-sm">Ürünü Ekle</button></div>
+                     <div style="align-items:center; justify-content: center;display: flex;"><button type="submit" style="cursor:pointer;" role="button" class="btn btn-primary btn-lg">Ürünü Ekle</button></div>
                  </form>  
               </div>
        ';
@@ -102,9 +125,9 @@ class DesignPanel
           <div class="form-group">
              <form action="index.php?Pg=LoginControl" method="post">
                  <h6>Üye Giriş Alanı</h6>
-                 <input type="email" name="email"  class="form-control" style="margin-right:5px;margin-left:5px;;width:95%" id="emailLogin" aria-describedby="emailHelp" placeholder="Email Adresi">
+                 <input type="email" name="email"  class="form-control" style="margin-right:15px;margin-left:15px;;width:95%" id="emailLogin" aria-describedby="emailHelp" placeholder="Email Adresi">
                  <div class="p-1"></div>
-                 <input type="password" name="password" class="form-control" style="margin-right:5px;margin-left:5px;;width:95%" id="passwordLogin" placeholder="Şifre">
+                 <input type="password" name="password" class="form-control" style="margin-right:15px;margin-left:15px;;width:95%" id="passwordLogin" placeholder="Şifre">
                  <div class="p-1"></div>
                  <div style="align-items:center; justify-content: center;display: flex;"><button type="submit" style="cursor:pointer;" role="button" class="btn btn-primary btn-sm">Üye Girişi Yap</button></div>
              </form>  
@@ -129,14 +152,18 @@ class DesignPanel
             <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Adreslerim</a>
             </li>
             <li>
-            <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Siparişlerim </a> <span class="badge badge-pill badge-warning"> 3</span>
+            <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Siparişlerim </a>';
+            
+            echo ' 
             </li>
             ';
             if($this->DbLayer->IsAdmin($_SESSION["LoginUser"]))
             {
                 echo '
                 <li>
-                <a href="index.php?Pg=EBakkalPanel">E-Bakkal Panel</a>
+                <a href="index.php?Pg=EBakkalPanel#checkOrders">E-Bakkal Panel</a> ';
+                $this->DbLayer->GetActiveOrders();
+                echo '
                 </li> 
                 ';       
             }
