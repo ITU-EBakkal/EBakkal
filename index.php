@@ -66,12 +66,12 @@ $DesignPanel = new DesignPanel;
                     Temel Gıda
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdownTemelGida">
-                    <a class="dropdown-item" href="#">Kahvaltılık</a>
-                    <a class="dropdown-item" href="#">Meyve & Sebze</a>
-                    <a class="dropdown-item" href="#">İçeçek</a>
-                    <a class="dropdown-item" href="#">Bakliyat</a>
-                    <a class="dropdown-item" href="#">Tatlı & Şeker</a>
-                    <a class="dropdown-item" href="#">Diğer</a>
+                    <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=11">Kahvaltılık</a>
+                    <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=12">Meyve & Sebze</a>
+                    <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=13">İçeçek</a>
+                    <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=14">Bakliyat</a>
+                    <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=15">Tatlı & Şeker</a>
+                    <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=16">Diğer</a>
                   </div>
                 </li>
 
@@ -80,10 +80,10 @@ $DesignPanel = new DesignPanel;
                       Unlu Mamüller
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownUnluMamuller">
-                      <a class="dropdown-item" href="#">Ekmek</a>
-                      <a class="dropdown-item" href="#">Pasta</a>
-                      <a class="dropdown-item" href="#">Poğaca & Simit</a>
-                      <a class="dropdown-item" href="#">Diğer</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=21">Ekmek</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=22">Pasta</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=23">Poğaca & Simit</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=24">Diğer</a>
                     </div>
                 </li>
                 
@@ -92,9 +92,9 @@ $DesignPanel = new DesignPanel;
                       Kasap
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownKasap">
-                      <a class="dropdown-item" href="#">Kırmızı Et</a>
-                      <a class="dropdown-item" href="#">Beyaz Et</a>
-                      <a class="dropdown-item" href="#">Diğer</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=31">Kırmızı Et</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=32">Beyaz Et</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=33">Diğer</a>
                     </div>
                 </li>
                 
@@ -103,15 +103,15 @@ $DesignPanel = new DesignPanel;
                       Temizlik Ürünleri
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownTemizlikUrunleri">
-                      <a class="dropdown-item" href="#">Deterjan</a>
-                      <a class="dropdown-item" href="#">Bulaşık Yıkama</a>
-                      <a class="dropdown-item" href="#">Şampuan & Sabun</a>
-                      <a class="dropdown-item" href="#">Ev Temizlik</a>
-                      <a class="dropdown-item" href="#">Diğer</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=41">Deterjan</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=42">Bulaşık Yıkama</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=43">Şampuan & Sabun</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=44">Ev Temizlik</a>
+                      <a class="dropdown-item" href="index.php?Pg=FetchProduct&Cid=45">Diğer</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Diğer</a>
+                    <a class="nav-link" href="index.php?Pg=FetchProduct&Cid=51">Diğer</a>
                 </li>
 
               </ul>

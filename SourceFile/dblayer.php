@@ -24,7 +24,19 @@ class DatabaseLayer
         $query->execute();
 		$rows = $query->fetch(PDO::FETCH_ASSOC);
 		return $rows["id"];
+	}
+	public function AddProduct($ad,$ucret,$aciklama,$stok_sayisi,$cat_id,$img_path,$ebakkal_id)
+	{
 
+		$query = $this->db->prepare("INSERT INTO eb_products (ad,ucret,aciklama,stok_sayisi,cat_id,img_path,ebakkal_id) VALUES (:ad,:ucret,:aciklama,:stok_sayisi,:cat_id,:img_path,:ebakkal_id)");
+		$query->bindValue(':ad',$ad);
+		$query->bindValue(':aciklama',$aciklama);
+		$query->bindValue(':stok_sayisi',$stok_sayisi);
+		$query->bindValue(':cat_id',$cat_id);
+		$query->bindValue(':img_path',$img_path);
+		$query->bindValue(':ucret',$ucret);
+		$query->bindValue(':ebakkal_id',$ebakkal_id);
+        $query->execute();
 	}
 	public function GetActiveOrders()
 	{
