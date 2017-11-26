@@ -14,7 +14,7 @@ class DesignPanel
     }
     public function EBakkalPanel()
     {
-        if(!($this->DbLayer->IsAdmin($_SESSION["LoginUser"])))
+        if(!($this->DbLayer->IsEBakkal($_SESSION["LoginUser"])))
             return;
         echo '
         <div class="col-sm-9">
@@ -79,6 +79,20 @@ class DesignPanel
     ';
     
     }
+    public function AddProductControl()
+    {
+        if(!($this->DbLayer->IsEBakkal($_SESSION["LoginUser"])))
+            return;
+        $urunadi = $_POST["urunadi"];
+        $stoksayisi = $_POST["stoksayisi"];
+        $aciklama = $_POST["aciklama"];
+        $urun_ucreti = $_POST["urun_ucreti"];
+        $kategori = $_POST["kategori"];
+
+        echo $urunadi." ".$stoksayisi." ".$urun_ucreti." ".$aciklama." ".$kategori;
+        
+        
+    }
     public function AddProduct()
     {
         echo '
@@ -87,16 +101,16 @@ class DesignPanel
                      <input type="text" name="urunadi" class="form-control" style="padding-right:15px;padding-left:15px;" id="eklemeurunadi" aria-describedby="emailHelp" placeholder="Ürün Adı">
                      <div class="p-1"></div>
                      <div style="padding-right:5px;" class="input-group">
-                        <input type="number" min="0.001" step="0.01" class="form-control" aria-label="Ürün Ücreti">
+                        <input type="number" step="0.1" name="urun_ucreti" class="form-control" aria-label="Ürün Ücreti">
                         <span class="input-group-addon">TL</span>
                         <span class="input-group-addon">0,00</span>
                     </div>
                     <div style="margin-bottom:0px;margin-top:5px;">
                         Kategori :
-                        <select class="custom-select form-control-lg">
+                        <select name="kategori" class="custom-select form-control-lg">
                         <option style="color:red;" disabled>Temel Gıda</option>
- 
-                        <option>Kahvaltılık</option>
+                        
+                        <option value="1">Kahvaltılık</option>
                         <option>Meyve&Sebze</option>
                         <option>İçeçek</option>
                         <option>Tatlı&Şeker</option>
@@ -115,30 +129,9 @@ class DesignPanel
               </div>
        ';
     }
-    public function LoginArea()
+    public function LoginSuccess()
     {
-        if($_SESSION["LoginUser"] == "")
-        {
         echo '
-        <div class="col-sm-3">
-        <div class="card">
-          <div class="form-group">
-             <form action="index.php?Pg=LoginControl" method="post">
-                 <h6>Üye Giriş Alanı</h6>
-                 <input type="email" name="email"  class="form-control" style="margin-right:15px;margin-left:15px;;width:95%" id="emailLogin" aria-describedby="emailHelp" placeholder="Email Adresi">
-                 <div class="p-1"></div>
-                 <input type="password" name="password" class="form-control" style="margin-right:15px;margin-left:15px;;width:95%" id="passwordLogin" placeholder="Şifre">
-                 <div class="p-1"></div>
-                 <div style="align-items:center; justify-content: center;display: flex;"><button type="submit" style="cursor:pointer;" role="button" class="btn btn-primary btn-sm">Üye Girişi Yap</button></div>
-             </form>  
-          </div>
-        </div>          
-        </div>
-     ';
-     }
-     else
-     {
-         echo '
         <div class="col-sm-3">
         <div class="card">
         <ul id="LoginMenuArea">
@@ -157,7 +150,7 @@ class DesignPanel
             echo ' 
             </li>
             ';
-            if($this->DbLayer->IsAdmin($_SESSION["LoginUser"]))
+            if($this->DbLayer->IsEBakkal($_SESSION["LoginUser"]))
             {
                 echo '
                 <li>
@@ -175,6 +168,33 @@ class DesignPanel
         </div>          
         </div>
         ';
+    }
+    public function LoginArea()
+    {
+        if($_SESSION["LoginUser"] == "")
+        {
+        echo '
+        <div class="col-sm-3">
+        <div class="card">
+          <div class="form-group">
+             <form action="index.php?Pg=LoginControl" method="post">
+                 <h6>Üye Giriş Alanı</h6>
+                 <input type="email" name="email"  class="form-control" style="margin-right:5px;margin-left:5px;;width:95%" id="emailLogin" aria-describedby="emailHelp" placeholder="Email Adresi">
+                 <div class="p-1"></div>
+                 <input type="password" name="password" class="form-control" style="margin-right:5px;margin-left:5px;;width:95%" id="passwordLogin" placeholder="Şifre">
+                 <div class="p-1"></div>
+                 <div style="align-items:center; justify-content: center;display: flex;"><button type="submit" style="cursor:pointer;" role="button" class="btn btn-primary btn-sm">Üye Girişi Yap</button></div>
+             </form>  
+          </div>
+          <a style="margin:5px;" class="btn btn-success btn-sm" href="index.php?Pg=Signup" role="button">Üye Ol</a>
+          <a style="margin:5px;" class="btn btn-warning btn-sm" href="index.php?Pg=LostPassword" role="button">Şifremi Unuttum</a>
+        </div>          
+        </div>
+     ';
+     }
+     else
+     {
+        $this->LoginSuccess();
      }
 
     }
@@ -233,12 +253,22 @@ class DesignPanel
         echo '</div>';
 
     }
+
+
 	public function MiddleContentLayout()
 	{
 		switch($_GET["Pg"])
 		{
 			case "LoginControl":
 			$this->LoginControl();
+            break;
+
+            case "AddProductControl":
+            $this->AddProductControl();
+            break;
+
+            case "AddProductControl":
+            $this->AddProductControl();
             break;
 
             case "Logout":

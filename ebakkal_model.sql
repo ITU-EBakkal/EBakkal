@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 25 Kas 2017, 11:08:17
+-- Üretim Zamanı: 26 Kas 2017, 09:34:48
 -- Sunucu sürümü: 5.7.17-log
--- PHP Sürümü: 5.6.30
+-- PHP Sürümü: 7.1.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -23,6 +23,28 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Tablo için tablo yapısı `eb_ebakkals`
+--
+
+CREATE TABLE `eb_ebakkals` (
+  `id` int(11) NOT NULL,
+  `adi` varchar(60) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `adres` varchar(200) NOT NULL,
+  `telefon_no` varchar(11) NOT NULL,
+  `durum` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_ebakkals`
+--
+
+INSERT INTO `eb_ebakkals` (`id`, `adi`, `user_id`, `adres`, `telefon_no`, `durum`) VALUES
+(1, 'Mert Market', 4, 'Rasathane', '05309240735', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Tablo için tablo yapısı `eb_orders`
 --
 
@@ -33,6 +55,14 @@ CREATE TABLE `eb_orders` (
   `tarih` date NOT NULL,
   `durum` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_orders`
+--
+
+INSERT INTO `eb_orders` (`id`, `ebakkal_id`, `user_id`, `tarih`, `durum`) VALUES
+(1, 4, 5, '0000-00-00', 1),
+(2, 4, 6, '0000-00-00', 0);
 
 -- --------------------------------------------------------
 
@@ -57,7 +87,8 @@ CREATE TABLE `eb_products` (
   `ad` varchar(30) NOT NULL,
   `ucret` double NOT NULL,
   `aciklama` varchar(140) NOT NULL,
-  `stok_sayisi` int(11) NOT NULL
+  `stok_sayisi` int(11) NOT NULL,
+  `is_active` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -79,8 +110,22 @@ CREATE TABLE `eb_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Tablo döküm verisi `eb_users`
+--
+
+INSERT INTO `eb_users` (`id`, `email`, `password`, `is_ebakkal`, `ad`, `soyad`, `il`, `ilce`, `adres`) VALUES
+(4, 'mrtkprc@gmail.com', '123456', 1, 'Mert', 'Koprucu', 34, 0, ''),
+(6, 'mrtkprc@yandex.com', '123456', 0, '', '', 0, 0, '');
+
+--
 -- Dökümü yapılmış tablolar için indeksler
 --
+
+--
+-- Tablo için indeksler `eb_ebakkals`
+--
+ALTER TABLE `eb_ebakkals`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Tablo için indeksler `eb_orders`
@@ -112,10 +157,15 @@ ALTER TABLE `eb_users`
 --
 
 --
+-- Tablo için AUTO_INCREMENT değeri `eb_ebakkals`
+--
+ALTER TABLE `eb_ebakkals`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+--
 -- Tablo için AUTO_INCREMENT değeri `eb_orders`
 --
 ALTER TABLE `eb_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_order_details`
 --
@@ -130,7 +180,7 @@ ALTER TABLE `eb_products`
 -- Tablo için AUTO_INCREMENT değeri `eb_users`
 --
 ALTER TABLE `eb_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

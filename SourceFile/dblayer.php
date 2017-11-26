@@ -41,7 +41,7 @@ class DatabaseLayer
 		$query = $this->db->prepare("INSERT INTO eb_users (email,password) VALUES('mk112','1234566')");
 		$query->execute();		
 	}
-	public function IsAdmin($email)
+	public function IsEBakkal($email)
 	{
 		$query = $this->db->prepare("SELECT id FROM eb_users WHERE email=:email AND is_ebakkal=:is_eb");
         $query->bindValue(':email',$email);
