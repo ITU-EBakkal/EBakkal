@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 26 Kas 2017, 09:34:48
+-- Üretim Zamanı: 26 Kas 2017, 11:57:12
 -- Sunucu sürümü: 5.7.17-log
 -- PHP Sürümü: 7.1.1
 
@@ -19,6 +19,47 @@ SET time_zone = "+00:00";
 --
 -- Veritabanı: `ebakkal_model`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `eb_categories`
+--
+
+CREATE TABLE `eb_categories` (
+  `id` int(11) NOT NULL,
+  `ad` varchar(30) NOT NULL,
+  `cat_num` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_categories`
+--
+
+INSERT INTO `eb_categories` (`id`, `ad`, `cat_num`) VALUES
+(1, 'Temel Gıda', 10),
+(2, 'Kahvaltılık', 11),
+(3, 'Meyve & Sebze', 12),
+(4, 'İçecek', 13),
+(5, 'Bakliyat', 14),
+(6, 'Tatlı & Şeker', 15),
+(7, 'Temel Gıda Diğer', 16),
+(9, 'Unlu Mamüller', 20),
+(10, 'Ekmek', 21),
+(11, 'Pasta', 22),
+(12, 'Poğaça & Simit', 23),
+(13, 'Unlu Mamüller Diğer', 24),
+(14, 'Kasap', 30),
+(15, 'Kırmızı Et', 31),
+(16, 'Beyaz Et', 32),
+(17, 'Kasap Diğer', 33),
+(18, 'Temizlik Ürünleri', 40),
+(19, 'Deterjan', 41),
+(20, 'Bulaşık Yıkama', 42),
+(21, 'Şampuan & Sabun', 43),
+(22, 'Ev Temizlik', 44),
+(23, 'Temizlik Ürünleri Diğer', 45),
+(24, 'Diğer Ürünler', 51);
 
 -- --------------------------------------------------------
 
@@ -52,17 +93,9 @@ CREATE TABLE `eb_orders` (
   `id` int(11) NOT NULL,
   `ebakkal_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `tarih` date NOT NULL,
+  `tarih` datetime NOT NULL,
   `durum` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Tablo döküm verisi `eb_orders`
---
-
-INSERT INTO `eb_orders` (`id`, `ebakkal_id`, `user_id`, `tarih`, `durum`) VALUES
-(1, 4, 5, '0000-00-00', 1),
-(2, 4, 6, '0000-00-00', 0);
 
 -- --------------------------------------------------------
 
@@ -86,10 +119,118 @@ CREATE TABLE `eb_products` (
   `id` int(11) NOT NULL,
   `ad` varchar(30) NOT NULL,
   `ucret` double NOT NULL,
+  `ebakkal_id` int(11) NOT NULL,
   `aciklama` varchar(140) NOT NULL,
   `stok_sayisi` int(11) NOT NULL,
+  `cat_id` int(11) NOT NULL,
+  `img_path` varchar(250) NOT NULL,
   `is_active` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_products`
+--
+
+INSERT INTO `eb_products` (`id`, `ad`, `ucret`, `ebakkal_id`, `aciklama`, `stok_sayisi`, `cat_id`, `img_path`, `is_active`) VALUES
+(6, 'Armut', 2.5, 4, 'Deveci Armutu', 999, 11, '12109876_1069805853039365_570355347057026506_o.jpg', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `eb_provinces`
+--
+
+CREATE TABLE `eb_provinces` (
+  `il_no` int(11) NOT NULL,
+  `isim` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_provinces`
+--
+
+INSERT INTO `eb_provinces` (`il_no`, `isim`) VALUES
+(1, 'Adana'),
+(2, 'Adıyaman'),
+(3, 'Afyonkarahisar'),
+(4, 'Ağrı'),
+(5, 'Amasya'),
+(6, 'Ankara'),
+(7, 'Antalya'),
+(8, 'Artvin'),
+(9, 'Aydın'),
+(10, 'Balıkesir'),
+(11, 'Bilecik'),
+(12, 'Bingöl'),
+(13, 'Bitlis'),
+(14, 'Bolu'),
+(15, 'Burdur'),
+(16, 'Bursa'),
+(17, 'Çanakkale'),
+(18, 'Çankırı'),
+(19, 'Çorum'),
+(20, 'Denizli'),
+(21, 'Diyarbakır'),
+(22, 'Edirne'),
+(23, 'Elâzığ'),
+(24, 'Erzincan'),
+(25, 'Erzurum'),
+(26, 'Eskişehir'),
+(27, 'Gaziantep'),
+(28, 'Giresun'),
+(29, 'Gümüşhane'),
+(30, 'Hakkâri'),
+(31, 'Hatay'),
+(32, 'Isparta'),
+(33, 'Mersin'),
+(34, 'İstanbul'),
+(35, 'İzmir'),
+(36, 'Kars'),
+(37, 'Kastamonu'),
+(38, 'Kayseri'),
+(39, 'Kırklareli'),
+(40, 'Kırşehir'),
+(41, 'Kocaeli'),
+(42, 'Konya'),
+(43, 'Kütahya'),
+(44, 'Malatya'),
+(45, 'Manisa'),
+(46, 'Kahramanmaraş'),
+(47, 'Mardin'),
+(48, 'Muğla'),
+(49, 'Muş'),
+(50, 'Nevşehir'),
+(51, 'Niğde'),
+(52, 'Ordu'),
+(53, 'Rize'),
+(54, 'Sakarya'),
+(55, 'Samsun'),
+(56, 'Siirt'),
+(57, 'Sinop'),
+(58, 'Sivas'),
+(59, 'Tekirdağ'),
+(60, 'Tokat'),
+(61, 'Trabzon'),
+(62, 'Tunceli'),
+(63, 'Şanlıurfa'),
+(64, 'Uşak'),
+(65, 'Van'),
+(66, 'Yozgat'),
+(67, 'Zonguldak'),
+(68, 'Aksaray'),
+(69, 'Bayburt'),
+(70, 'Karaman'),
+(71, 'Kırıkkale'),
+(72, 'Batman'),
+(73, 'Şırnak'),
+(74, 'Bartın'),
+(75, 'Ardahan'),
+(76, 'Iğdır'),
+(77, 'Yalova'),
+(78, 'Karabük'),
+(79, 'Kilis'),
+(80, 'Osmaniye'),
+(81, 'Düzce');
 
 -- --------------------------------------------------------
 
@@ -122,6 +263,12 @@ INSERT INTO `eb_users` (`id`, `email`, `password`, `is_ebakkal`, `ad`, `soyad`, 
 --
 
 --
+-- Tablo için indeksler `eb_categories`
+--
+ALTER TABLE `eb_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Tablo için indeksler `eb_ebakkals`
 --
 ALTER TABLE `eb_ebakkals`
@@ -146,6 +293,12 @@ ALTER TABLE `eb_products`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Tablo için indeksler `eb_provinces`
+--
+ALTER TABLE `eb_provinces`
+  ADD PRIMARY KEY (`il_no`);
+
+--
 -- Tablo için indeksler `eb_users`
 --
 ALTER TABLE `eb_users`
@@ -156,6 +309,11 @@ ALTER TABLE `eb_users`
 -- Dökümü yapılmış tablolar için AUTO_INCREMENT değeri
 --
 
+--
+-- Tablo için AUTO_INCREMENT değeri `eb_categories`
+--
+ALTER TABLE `eb_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_ebakkals`
 --
@@ -175,7 +333,7 @@ ALTER TABLE `eb_order_details`
 -- Tablo için AUTO_INCREMENT değeri `eb_products`
 --
 ALTER TABLE `eb_products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_users`
 --
