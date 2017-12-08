@@ -12,6 +12,16 @@ class DesignPanel
         $this->DbLayer = new DatabaseLayer;
         $this->isAdmin = false;
     }
+    public function GiveAnOrder()
+    {
+        if(!($this->DbLayer->IsEBakkal($_SESSION["LoginUser"])))
+        return;
+        echo '
+        <div class="col-sm-9">';
+
+        echo '</div>';
+    }
+
     public function EBakkalPanel()
     {
         if(!($this->DbLayer->IsEBakkal($_SESSION["LoginUser"])))
@@ -79,6 +89,59 @@ class DesignPanel
     ';
     
     }
+    public function MiddleBottomProducts()
+    {
+        $Cid = $_GET["Cid"];
+
+        $sql;
+        if($_SESSION["SelectedEBakkal"]=="")
+        {
+            if($Cid =="")
+                $sql = "SELECT * FROM eb_products";
+            else
+                $sql = "SELECT * FROM eb_products WHERE cat_id = ".$Cid;
+        }
+        else
+        {
+            if($Cid == "")
+                $sql = "SELECT * FROM eb_products WHERE ebakkal_id = ".$_SESSION["SelectedEBakkal"];
+            else
+                $sql = "SELECT * FROM eb_products WHERE ebakkal_id = ".$_SESSION["SelectedEBakkal"] ." AND cat_id = ".$Cid;
+        }
+        $i = 0;
+        $query = $this->DbLayer->db->prepare($sql);
+        $query->execute();
+        $listele = $query->fetchAll();
+
+        echo '<div style="margin-bottom:10px;" class ="row">';
+        foreach($listele as $liste)
+        {
+            $ad = $liste["ad"];
+            $ucret = $liste["ucret"];
+            $id = $liste["id"];
+            $img_path = $liste["img_path"];
+            if(!file_exists("uploads/".$img_path))
+                $img_path = "gorsel_yok.png";
+
+            //echo $i. "<br/>";
+            echo '<div  class="text-center card col-sm-3">
+            <img style="min-height:150px;height:150px;" src="uploads/'.$img_path.'" alt="Ürün Resmi Yok" class="rounded img-thumbnail"> 
+            <h6> '.$ad.' </h6>
+            <hr/>
+            <h5> '.$ucret.' TL</h5>
+            <a role="button" style="color:white; margin-bottom:10px;" href="index.php?Pg=AddBasket&ProdID='.$id.'" class="btn btn-dark">Sepete Ekle</a>
+            </div>';
+
+            $i++;
+        }
+        echo '</div>';
+        
+
+
+
+
+    
+    }
     public function AddProductControl()
     {
         if(!($this->DbLayer->IsEBakkal($_SESSION["LoginUser"])))
@@ -93,7 +156,7 @@ class DesignPanel
         $target_file = $target_dir.basename($resim);
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-
+        $imageFileType = strtolower(substr($_FILES["resim_yukleme"]["name"],-3));
         // echo "Ürün Adı : ". $urunadi." <br/>";
         // echo "Ürün Ücreti : ". $urun_ucreti." <br/>";
         // echo "Kategori : ". $kategori." <br/>";
@@ -107,8 +170,8 @@ class DesignPanel
             ';
             $uploadOk = 0;
         }
-        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-        && $imageFileType != "gif" ) {
+        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" ) {
+            
             echo '
             <div class="alert alert-danger" role="alert">
             <strong>Hata!!!!</strong> Lütfen Uygun Bir resim formatı seçiniz
@@ -129,6 +192,55 @@ class DesignPanel
            ';
         }
 
+    }
+    public function UserBasketCount()
+    {
+        if($_SESSION["SelectedEBakkal"]<=0)
+        {
+            return;
+        }
+
+        $query = $this->DbLayer->db->prepare("SELECT count(id) as cid FROM eb_baskets WHERE ebakkal_id=:ebakkal_id AND user_id=:user_id");
+        $query->bindValue(':ebakkal_id',$_SESSION["SelectedEBakkal"]);
+        $query->bindValue(':user_id',$this->DbLayer->GetUserID($_SESSION["LoginUser"]));
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo $rows[0]["cid"];
+        
+       
+    }
+    public function GetEBakkals()
+	{
+        if($_SESSION["SelectedEBakkal"]=="")
+            echo '<option disabled value="0">Hizmet Alınacak EBakkalı Seçiniz</option>';
+        
+        
+		foreach($this->DbLayer->db->query('SELECT * FROM eb_ebakkals WHERE durum = 1') as $listele) 
+		{
+		
+			$ad = $listele['adi'];
+            $eb_id = $listele['user_id'];
+            if($eb_id==$_SESSION["SelectedEBakkal"])
+                echo  '<option  selected value="'.$eb_id.'">'.$ad . '</option>';
+            else
+                echo  '<option value="'.$eb_id.'">'.$ad . '</option>';
+		}
+
+		// echo '
+		// 
+        // <option value="1">One</option>
+        // <option value="2">Two</option>
+		// <option value="3">Three</option>
+		// ';
+    }
+    public function GetEBakkal($eb_id)
+    {
+        foreach($this->DbLayer->db->query('SELECT adi FROM eb_ebakkals WHERE user_id ='.$eb_id) as $listele) 
+		{
+			return $listele['adi'];
+            
+        }
     }
     public function AddProduct()
     {
@@ -176,6 +288,68 @@ class DesignPanel
               </div>
        ';
     }
+
+    public function MyAddress(){
+        echo '
+        <div class="col-sm-9">
+        <div class="card">';
+       
+        echo '
+        <form action="index.php?Pg=MyAddressControl" method="post">
+        <!-- Form Name -->
+        <legend>Adresim</legend>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="lastname">İlçe</label>  
+          <div class="col-md-5">
+          <input id="ilce" name="ilce" type="text" placeholder="İlçenizi giriniz" class="form-control input-md" required="">
+            
+          </div>
+        </div>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="firstname">Mahalle</label>  
+          <div class="col-md-5">
+          <input id="mahalle" name="mahalle" type="text" placeholder="Mahallenizi giriniz" class="form-control input-md" required="">
+            
+          </div>
+        </div>
+        
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="email">Sokak</label>  
+          <div class="col-md-5">
+          <input id="sokak" name="sokak" type="text" placeholder="Sokağınızı giriniz" class="form-control input-md" required="">
+          </div>
+        </div>
+          
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="aciklama">Adres Tarifi</label>
+          <div class="col-md-5">
+            <input id="tarif" name="tarif" type="text" style="height:150px" class="form-control input-md" required="">
+            
+          </div>
+        </div>
+     
+        <!-- Button -->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="confirmation"></label>
+          <div class="col-md-4">
+            <button id="kaydet" name="kaydet" class="btn btn-primary">Kaydet</button>
+          </div>
+        </div>
+        
+        </fieldset>
+        </form>
+
+        ';
+        echo '</div></div>';
+
+    }
+
     public function LoginSuccess()
     {
         echo '
@@ -186,10 +360,10 @@ class DesignPanel
             <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Email Ayarları</a>
             </li>
             <li>
-            <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Parolamı Değiştir</a>
+            <a href="index.php?Pg=ChangePassword" id="navbarDropdownSiparislerim" role="button"  aria-haspopup="true" aria-expanded="false">Parolamı Değiştir</a>
             </li>
             <li>
-            <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Adreslerim</a>
+            <a href="index.php?Pg=MyAddress" id="navbarDropdownSiparislerim" role="button"  aria-haspopup="true" aria-expanded="false">Adresim</a>
             </li>
             <li>
             <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Siparişlerim </a>';
@@ -256,8 +430,93 @@ class DesignPanel
         </div>
         ';
         $_SESSION["LoginUser"] = "";
+        $_SESSION["SelectedEBakkal"] = "";
         header("Refresh:2; url=index.php");
     }
+    function QuitAll()
+    {
+        $_SESSION["SelectedEBakkal"] = "";
+        header("Refresh:1; url=index.php");
+        
+    }
+    function SignupControl()
+    {
+        $first_name = $_POST["isim"];
+        $last_name = $_POST["soyisim"];
+    }
+
+    function AddBasket()
+    {
+        if($_SESSION["SelectedEBakkal"]<=0)
+        {
+            echo '
+            <div class="alert alert-danger" role="alert">
+            Bakkal Seçmediniz!!!<br/>
+            Lütfen Bir Bakkal Seçiniz...
+          </div>';
+          return;
+        }
+
+        $ProdID = $_GET["ProdID"];
+        $ebakkal_id = $_SESSION["SelectedEBakkal"];
+        $user_id = $this->DbLayer->GetUserID($_SESSION["LoginUser"]);
+
+        $this->DbLayer->AddUserBasket($ebakkal_id,$ProdID,$user_id);
+        header("Refresh:1; url=index.php");
+        
+    }
+
+    function MyBasketArea()
+    {
+        echo '
+        <div class="col-sm-9">
+        <div class="card">';
+
+        if($_SESSION["SelectedEBakkal"]<=0 || $_SESSION["LoginUser"]=="")
+        {
+            echo '</div></div>';
+            
+            return;
+        }
+
+        echo '
+        <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Ürün Adı</th>
+            <th scope="col">Adet</th>
+            <th scope="col">Fiyat</th>
+            <th scope="col">Toplam</th>
+          </tr>
+        </thead>
+        <tbody>';
+        foreach($this->DbLayer->db->query('SELECT prd.ad as ad,bsk.count,prd.ucret as fiyat,bsk.count * prd.ucret as toplam FROM `eb_baskets` bsk INNER JOIN eb_products prd ON prd.id = bsk.prod_id WHERE bsk.user_id='.$this->DbLayer->GetUserID($_SESSION["LoginUser"]).' AND bsk.ebakkal_id ='.$_SESSION["SelectedEBakkal"].' ') as $listele) 
+        {
+            echo '
+            <tr>
+              <th scope="row">'.$listele["ad"].'</th>
+              <td>'.$listele["count"].'</td>
+              <td>'.number_format($listele["fiyat"],3).'</td>
+              <td>'.number_format($listele["toplam"],3).'</td>
+            </tr>';
+        }
+        $query = $this->DbLayer->db->prepare('SELECT SUM(bsk.count * prd.ucret) as toplam FROM `eb_baskets` bsk INNER JOIN eb_products prd ON prd.id = bsk.prod_id WHERE bsk.user_id='.$this->DbLayer->GetUserID($_SESSION["LoginUser"]).' AND bsk.ebakkal_id ='.$_SESSION["SelectedEBakkal"].' ');
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+          echo '
+        </tbody>
+      </table>
+        ';
+
+        echo '<span style="margin:auto; font-size:22px; font-weight:bold;">Toplam : '.number_format($rows[0]["toplam"],2).'</span>';
+
+        echo 'Adres Bilgileriniz:<br/>';
+
+        echo '<a class="btn btn-primary" style="color:white; font-weight:bold;" href="index.php?Pg=GiveAnOrder" role="button">Siparişi Ver</a>';
+        echo '</div></div>';
+    }
+
     public function Signup()
     {
         echo '
@@ -272,7 +531,7 @@ class DesignPanel
         <div class="form-group">
           <label class="col-md-4 control-label" for="lastname">İsim</label>  
           <div class="col-md-5">
-          <input id="isim" name="isim" type="text" placeholder="İsmninizi giriniz" class="form-control input-md" required="">
+          <input id="isim" name="isim" type="text" placeholder="İsminizi giriniz" class="form-control input-md" required="">
             
           </div>
         </div>
@@ -396,6 +655,190 @@ class DesignPanel
 
     }
 
+    public function SelectEBakkal ()
+    {
+        $ebakkal_id = $_POST["bakkal"];
+        $_SESSION["SelectedEBakkal"] = $ebakkal_id;
+        header("Refresh:1; url=index.php");
+
+
+    }
+
+    public function ChangePasswordControl()
+    {
+        $email = $_POST['mailforpasswordchange'];
+        $oldPassword = $_POST['oldpassword'];
+        $newPassword = $_POST['newpassword'];
+        $newPasswordApproved = $_POST['newpasswordapproved'];
+     
+        if($this->DbLayer->PasswordControl($email , $oldPassword) == 1)
+        {
+
+            if($newPassword == $newPasswordApproved)
+            {
+             $this->DbLayer->UpdatePassword($email , $newPassword);
+             echo '
+                 <div class="alert alert-success" role="alert">
+                     <h4 class="alert-heading">BAŞARILI!</h4>
+                     <p>Parolanız başarılı bir şekilde değiştirildi</p>
+                     <hr>
+                     <p class="mb-0">EBakkal ~ 2017</p>
+                 </div>';
+                 header("Refresh:3; url=index.php");
+
+            }
+            else
+            {
+
+             echo '
+             <div class="alert alert-danger" role="alert">
+                 <h4 class="alert-heading">HATA!</h4>
+                 <p>Parolalar uyuşmamaktadır. Lütfen aynı değerleri giriniz</p>
+                 <hr>
+                 <p class="mb-0">EBakkal ~ 2017</p>
+             </div>';
+
+                
+            }
+        }
+
+        else
+        {
+            
+         echo '
+         <div class="alert alert-danger" role="alert">
+             <h4 class="alert-heading">HATA!</h4>
+             <p>Mail adresi ve kullanıcı adı eşleşmemektedir. Güvenliğiniz için parolanızı değiştirmemekteyiz</p>
+             <hr>
+             <p class="mb-0">EBakkal ~ 2017</p>
+         </div>';
+            
+
+        }
+
+    }
+
+    public  function ChangePassword()
+    {
+        echo'
+            <div class="col-sm-9">
+                <h3 class="text-center">Parolayı Değiştir</h3>
+                <hr/>
+                <form action ="index.php?Pg=ChangePasswordControl" method = "post">
+                    <div class="form-group">
+                        <label>Mail adresinizi giriniz :</label>
+                        <input type="text" class="form-control" placeholder ="mail adresiniz" name = "mailforpasswordchange" style = "width : 250px;"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Eski parolanızı giriniz :</label>
+                        <input type="password" class="form-control" placeholder = "eski parolanız"name = "oldpassword" style = "width : 250px;"/>
+                    </div>
+                     <div class="form-group">
+                        <label>Yeni parolanızı giriniz :</label>
+                        <input type="password" class="form-control" placeholder="yeni parolanız" name = "newpassword" style = "width : 250px;"/>
+                    </div>
+                     <div class="form-group">
+                        <label>Yeni parolanızı tekrar giriniz :</label>
+                        <input type="password" class="form-control" placeholder = "tekrar giriniz"name = "newpasswordapproved" style = "width : 250px"/>
+                    </div>
+                   ';
+
+                   
+
+
+                   echo'
+
+                    <button class="btn btn-primary btn-sm center-block">
+                        Parolamı Değiştir
+                    </button>
+                </form>
+            </div>
+        ';
+        
+
+    }
+
+    public function MyAddressControl()
+    {
+        
+    }
+
+    public function LostPasswordControl(){
+        $email = $_POST['email'];
+     
+
+        $query = $this->DbLayer->db->prepare("SELECT id FROM eb_users WHERE email=:email");
+        $query->bindValue(':email',$email);
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+        if(count($rows)==1){
+            echo '
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">Şifremi Unuttum</h4>
+                <p>Şifreniz mail adresinize başarılı bir şekilde gönderilmiştir.</p>
+                <hr>
+                <p class="mb-0">EBakkal ~ 2017</p>
+                </div>
+            ';
+          
+        }
+        else{
+            echo '
+            <div class="alert alert-danger" role="alert">
+            Mail Adresiniz Başarısız.<br/>
+            Lütfen girdiğiniz mail adresinizi Kontrol Ediniz.
+          </div>';
+        
+        }
+    }
+    public function LostPassword(){
+       echo'
+        <div class = "col-sm-9 ">
+       ';
+        echo '
+        <form action="index.php?Pg=LostPasswordControl" method="post">
+        <div class="form-gap"></div>
+        <div class="container">
+
+
+           <div class="row">
+               <div class="col-md-4 col-md-offset-4">
+                   <div class="panel panel-default">
+                     <div class="panel-body">
+                       <div class="text-center">
+                         <h3><i class="fa fa-lock fa-4x"></i></h3>
+                         <h2 class="text-center">Şifremi Unuttum?</h2>
+                         <p>Şifrenizi buraya mail adresinizi yazarak sıfırlayabilirsiniz.</p>
+                         <div class="panel-body">
+           
+                           <form id="register-form" role="form" autocomplete="off" class="form" method="post">
+           
+                             <div class="form-group">
+                               <div class="input-group">
+                                 <span class="input-group-addon"><i class="glyphicon glyphicon-envelope color-blue"></i></span>
+                                 <input id="email" name="email" placeholder="E-mail Adresi" class="form-control"  type="email">
+                               </div>
+                             </div>
+                             <div class="form-group">
+                               <input name="recover-submit" class="btn btn-lg btn-primary btn-block" value="Parolayı Sıfırla" type="submit">
+                             </div>
+                             
+                             <input type="hidden" class="hide" name="token" id="token" value=""> 
+                           </form>
+           
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+           </div>
+       </div>
+        ';
+        echo'
+        </div>
+        ';
+    }
 
 	public function MiddleContentLayout()
 	{
@@ -405,8 +848,12 @@ class DesignPanel
 			$this->LoginControl();
             break;
 
-            case "AddProductControl":
-            $this->AddProductControl();
+            case "ChangePassword":
+			$this->ChangePassword();
+            break;
+
+            case "SelectEBakkal":
+            $this->SelectEBakkal();
             break;
 
             case "AddProductControl":
@@ -421,8 +868,48 @@ class DesignPanel
             $this->Signup();
             break;
 
+            case "SignupControl":
+            $this->SignupControl();
+            break;
+
             case "EBakkalPanel":
 			$this->EBakkalPanel();
+            break;
+
+            case "QuitAll":
+            $this->QuitAll();
+            break;
+
+            case "AddBasket":
+            $this->AddBasket();
+            break;
+
+            case "LostPassword":
+            $this->LostPassword();
+            break;
+
+            case "LostPasswordControl":
+            $this->LostPasswordControl();
+            break;
+
+            case "GiveAnOrder":
+            $this->GiveAnOrder();
+            break;
+
+            case "MyBasketArea":
+            $this->MyBasketArea();
+            break;
+
+            case "MyAddress":
+            $this->MyAddress();
+            break;
+
+            case "MyAddressControl":
+            $this->MyAddressControl();
+            break;
+
+            case "ChangePasswordControl":
+            $this->ChangePasswordControl();
             break;
             
             default:

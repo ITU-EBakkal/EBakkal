@@ -16,3 +16,11 @@
 {
     margin-top:10px;
 }
+#MyBasket
+{
+    background:url("https://www.w3schools.com/images/colorpicker.gif");
+    background-size:320px 320px; 
+    background-repeat:no-repeat; 
+    float:right; 
+    margin-top:15px; 
+}

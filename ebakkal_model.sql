@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 26 Kas 2017, 11:57:12
+-- Üretim Zamanı: 27 Kas 2017, 20:36:06
 -- Sunucu sürümü: 5.7.17-log
 -- PHP Sürümü: 7.1.1
 
@@ -81,7 +81,8 @@ CREATE TABLE `eb_ebakkals` (
 --
 
 INSERT INTO `eb_ebakkals` (`id`, `adi`, `user_id`, `adres`, `telefon_no`, `durum`) VALUES
-(1, 'Mert Market', 4, 'Rasathane', '05309240735', 1);
+(1, 'Mert Market', 4, 'Rasathane', '05309240735', 1),
+(2, 'Kurt Market', 10, 'Nazilli', '', 1);
 
 -- --------------------------------------------------------
 
@@ -132,7 +133,13 @@ CREATE TABLE `eb_products` (
 --
 
 INSERT INTO `eb_products` (`id`, `ad`, `ucret`, `ebakkal_id`, `aciklama`, `stok_sayisi`, `cat_id`, `img_path`, `is_active`) VALUES
-(6, 'Armut', 2.5, 4, 'Deveci Armutu', 999, 11, '12109876_1069805853039365_570355347057026506_o.jpg', 1);
+(6, 'Armut', 2.5, 4, 'Deveci Armutu', 999, 12, 'pirinc.png', 1),
+(7, 'Kiraz', 1.54, 4, 'adsa', 999, 13, 'kiraz.PNG', 1),
+(8, 'Pirinç', 5.47, 10, 'Kırık Pirinç', 20, 14, 'pirinc.png', 1),
+(9, 'Pirinç', 5.47, 10, 'Kırık Pirinç', 20, 14, 'pirinc.png', 1),
+(10, 'Kiraz 2', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1),
+(11, 'Kiraz 3', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1),
+(12, 'Kiraz 4', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1);
 
 -- --------------------------------------------------------
 
@@ -256,7 +263,8 @@ CREATE TABLE `eb_users` (
 
 INSERT INTO `eb_users` (`id`, `email`, `password`, `is_ebakkal`, `ad`, `soyad`, `il`, `ilce`, `adres`) VALUES
 (4, 'mrtkprc@gmail.com', '123456', 1, 'Mert', 'Koprucu', 34, 0, ''),
-(6, 'mrtkprc@yandex.com', '123456', 0, '', '', 0, 0, '');
+(6, 'mrtkprc@yandex.com', '123456', 0, '', '', 0, 0, ''),
+(10, 'tugrulkurt@gmail.com', '123456', 1, 'Tuğrul', 'KURT', 34, 0, '');
 
 --
 -- Dökümü yapılmış tablolar için indeksler
@@ -318,7 +326,7 @@ ALTER TABLE `eb_categories`
 -- Tablo için AUTO_INCREMENT değeri `eb_ebakkals`
 --
 ALTER TABLE `eb_ebakkals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_orders`
 --
@@ -333,12 +341,12 @@ ALTER TABLE `eb_order_details`
 -- Tablo için AUTO_INCREMENT değeri `eb_products`
 --
 ALTER TABLE `eb_products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_users`
 --
 ALTER TABLE `eb_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

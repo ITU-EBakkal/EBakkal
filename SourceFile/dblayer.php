@@ -17,6 +17,25 @@ class DatabaseLayer
     {
         
 	}
+
+	public function UpdatePassword($Email ,$Password)
+	{
+		$query = $this->db->prepare("UPDATE eb_users SET password = :password WHERE email = :email");
+		$query->bindValue(':email',$Email);
+		$query->bindValue(':password',$Password);
+		$query->execute();
+	}
+
+	public function PasswordControl($email , $password)
+	{
+		$query = $this->db->prepare("SELECT count(email) FROM eb_users WHERE email=:email AND password = :password");
+		$query->bindValue(':email',$email);
+		$query->bindValue(':password',$password);
+        $query->execute();
+		$Number = $query->fetch(PDO::FETCH_ASSOC);
+		return $Number['count(email)'];
+	}
+
 	public function GetUserID($email)
 	{
 		$query = $this->db->prepare("SELECT id FROM eb_users WHERE email=:email");
@@ -38,6 +57,18 @@ class DatabaseLayer
 		$query->bindValue(':ebakkal_id',$ebakkal_id);
         $query->execute();
 	}
+
+	public function AddUserBasket($ebakkal_id,$prod_id,$user_id)
+	{
+		$query = $this->db->prepare("INSERT INTO eb_baskets (ebakkal_id,prod_id,user_id) VALUES (:ebakkal_id,:prod_id,:user_id)");
+		$query->bindValue(':ebakkal_id',$ebakkal_id);
+		$query->bindValue(':prod_id',$prod_id);
+		$query->bindValue(':user_id',$user_id);
+		
+		$query->execute();
+		
+	}
+
 	public function GetActiveOrders()
 	{
 		$query = $this->db->prepare("SELECT id FROM eb_orders WHERE ebakkal_id = :ebakkal_id AND durum = 1");

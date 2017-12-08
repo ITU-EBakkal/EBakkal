@@ -36,8 +36,38 @@ $DesignPanel = new DesignPanel;
         <img class="img-responsive" height="80" src="./img/logo.png" alt="Logo"/>
       </div>
       <div id="ComboboxBasketArea" class="col-sm-9">
-          
-		  ComboBox and Basket Area
+
+      <form action="index.php?Pg=SelectEBakkal" method="post">    
+		  <select name="bakkal" style="margin-top:10px; width:350px; margin-bottom:10px;" class="custom-select form-control-lg">
+       
+      <?php
+      $DesignPanel->GetEBakkals();
+      ?>
+
+      </select>
+      <button class="btn btn-primary btn-lg">Onayla</button> 
+      
+      <?php
+      if($_SESSION["SelectedEBakkal"]!="")
+        echo '<a href="index.php?Pg=QuitAll"><img alt="Tüm Bakkallardan Çık" title="Bakkallardan Çık" width=32 height=32 src="./img/logout.png" /> </a>';
+      ?>
+      <a href="index.php?Pg=MyBasketArea"><span style="float:right; margin-top:25px; background-size:32px;32px;"><img src="./img/basket.png" /> <span class="badge badge-pill badge-info"><?php $DesignPanel->UserBasketCount(); ?></span> </span></a>
+      <br/>
+      </form>  
+     
+
+      <?php 
+      if($_SESSION["SelectedEBakkal"]=="")
+      {
+        echo '<span class="badge badge-secondary">Bir Bakkal Seçmediniz</span>';
+      }
+      else
+      {
+        echo '<span class="badge badge-info">'.$DesignPanel->GetEBakkal($_SESSION["SelectedEBakkal"]).'</span>';
+      }
+      ?>
+      
+     
 
       </div>
      
@@ -45,7 +75,7 @@ $DesignPanel = new DesignPanel;
 
     <div class="row">
       
-      <div class="col-sm-12">
+      <div style="margin-bottom:10px;" class="col-sm-12">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="index.php">
                 <img src="./img/e_3232.png" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -141,9 +171,15 @@ $DesignPanel = new DesignPanel;
         <div  class="col-sm-3">
           Ekstra Alan
         </div>
-        <div class="col-sm-9">
-          Ürün Listesi Sayfası
-        </div>
+
+        <div style="margin-top:10px;" class="col-sm-9">
+          
+          <?php
+          $DesignPanel->MiddleBottomProducts();
+          ?>
+
+         </div>
+
     </div>
 
     <div style="margin-top:30px;" class="row">
