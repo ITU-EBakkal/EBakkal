@@ -26,7 +26,7 @@ $DesignPanel = new DesignPanel;
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 
 
-<title>E-Bakkal Template</title>
+<title>Bakkalınız Size Bir Tık Kadar Uzak! ~ EBakkal</title>
 </head>
 
 <body>
@@ -147,8 +147,8 @@ $DesignPanel = new DesignPanel;
                 </li>
 
               </ul>
-              <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-0" type="search" placeholder="Search" aria-label="Search">
+              <form action="index.php?Pg=SearchProduct" method="post" class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-0" type="search" name="searchproduct" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success my-0 my-sm-0" type="submit">Search</button>
               </form>
             </div>
@@ -171,7 +171,7 @@ $DesignPanel = new DesignPanel;
   
     <div class="row">
         <div  class="col-sm-3">
-          Ekstra Alan
+          
         </div>
 
         <div style="margin-top:10px;" class="col-sm-9">

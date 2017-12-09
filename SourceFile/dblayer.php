@@ -7,6 +7,37 @@ date_default_timezone_set('Europe/Istanbul');
 class DatabaseLayer
 {
 	public $db;
+	public function UpdateAddress($fulllAddress , $Email)
+	{
+		$query = $this->db->prepare("UPDATE eb_users SET adres = :address WHERE email = :email");
+		$query->bindValue(':email',$Email);
+		$query->bindValue(':address',$fulllAddress);
+		$query->execute();
+	}
+	public function ProductSearch($searchedWord)
+	{
+		$sql  = 'SELECT * FROM `eb_products` WHERE ad LIKE \'%kiraz%\'';
+		//WHERE LIKE ad:%SearchedWord%
+		$searchedWord = '%' . $searchedWord . '%' ;
+		$query = $this->db->prepare("SELECT *  FROM eb_products WHERE ad LIKE :SearchedWord");
+		
+		$query->bindValue(':SearchedWord',$searchedWord);
+        $query->execute();
+		$AllRows = $query->fetchAll(PDO::FETCH_ASSOC);
+		
+		return $AllRows;
+		
+	}
+
+	
+	public function GetInfo($email)
+	{
+		$query = $this->db->prepare("SELECT * FROM eb_users WHERE email=:email");
+        $query->bindValue(':email',$email);
+        $query->execute();
+		$rows = $query->fetch(PDO::FETCH_ASSOC);
+		return $rows;
+	}
 	
 	public function OpenConnection()
 	{

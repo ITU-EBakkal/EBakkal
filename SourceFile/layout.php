@@ -12,6 +12,160 @@ class DesignPanel
         $this->DbLayer = new DatabaseLayer;
         $this->isAdmin = false;
     }
+
+    public function MyOrders()
+    {
+        echo '<div class="col-sm-9">';
+        $us_id = $this->DbLayer->GetUserID($_SESSION["LoginUser"]);
+        foreach($this->DbLayer->db->query('SELECT id,tarih,user_id,durum FROM eb_orders WHERE user_id = '.$us_id.' ORDER BY durum ASC,id DESC') as $listele)
+        {
+            $ord_id = $listele["id"];
+            $tarih  = $listele["tarih"];
+            $user_id = $listele["user_id"];
+            $durum = $listele["durum"];
+            $que_usr = $this->DbLayer->db->prepare('SELECT id,ad,soyad,adres FROM eb_users WHERE id = 4');
+            $que_usr->execute();
+            $rows_user = $que_usr->fetchAll(PDO::FETCH_ASSOC);
+
+            echo '<div style="margin-top:10px;margin-bottom:30px;" class="card col-sm-12"><fieldset><legend>'.$tarih.' |';
+            
+            if($durum==1)
+            {
+                echo '<span style="margin-left:5px;" class="badge badge-danger"> Hazırlanıyor</span> ';
+            }
+            else if($durum == 2)
+            {
+                echo '<span style="margin-left:5px;" class="badge badge-warning"> Sevkiyatta</span> ';
+            }
+            else if($durum == 0)
+            {
+                echo '<span style="margin-left:5px;" class="badge badge-success"> Teslim Edildi</span> ';
+            }
+            echo '
+            </legend>
+            ';
+
+            echo '
+
+            <table class="table table-hover">
+            <tbody>
+   
+            <tr>
+                <th scope="row">Adres</th>
+                <td>'.nl2br($rows_user[0]["adres"]).'</td>
+            </tr>
+            </tbody>
+          </table>
+            
+            ';
+            
+            echo '
+            <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Ürün Adı</th>
+                <th scope="col">Adet</th>
+                <th scope="col">Fiyat</th>
+                <th scope="col">Toplam</th>
+              </tr>
+            </thead>
+            <tbody>';
+            foreach($this->DbLayer->db->query('SELECT od.product_count,p.ad,p.ucret,p.ucret * od.product_count as tutar FROM eb_order_details od INNER JOIN eb_products p ON p.id = od.product_id WHERE od.order_id = '.$ord_id.'') as $listele) 
+            {
+                echo '
+                <tr>
+                  <th scope="row">'.$listele["ad"].'</th>
+                  <td><input disabled style="width:70px; text-align:right;" class="form-control" type="number" value="'.$listele["product_count"].'" id="example-number-input"></td>
+                  <td>'.number_format($listele["ucret"],3).'</td>
+                  <td>'.number_format($listele["tutar"],3).'</td>
+                </tr>';
+            }
+            $query = $this->DbLayer->db->prepare('SELECT SUM(p.ucret * od.product_count) as top_tutar FROM eb_order_details od INNER JOIN eb_products p ON p.id = od.product_id WHERE od.order_id = '.$ord_id.'');
+            $query->execute();
+            $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+            
+              echo '
+            </tbody>
+          </table>
+            ';
+            echo '<span class="col-sm-12" style="float:right;color:orange;text-align:right;font-weight:bold; background-color:#333; margin:auto; font-size:26px;">'.number_format($rows[0]["top_tutar"],3).' TL</span>';
+            echo '</fieldset>
+            </div>';
+            
+        } 
+        echo '</div>';
+        
+    }
+
+    public function SearchProduct()
+    {
+        $searchedWord = $_POST['searchproduct'];
+        $listele = $this->DbLayer->ProductSearch($searchedWord);
+
+        echo '<div class="col-sm-9">';
+        echo '<div style="margin-bottom:10px;" class ="row">';
+ 
+                    foreach($listele as $liste)
+                    {
+                        $ad = $liste["ad"];
+                        $ucret = $liste["ucret"];
+                        $id = $liste["id"];
+                        $img_path = $liste["img_path"];
+                        if(!file_exists("uploads/".$img_path))
+                            $img_path = "gorsel_yok.png";
+            
+                        echo '<div  class="text-center card col-sm-3">
+                        <img style="min-height:150px;height:150px;" src="uploads/'.$img_path.'" alt="Ürün Resmi Yok" class="rounded img-thumbnail"> 
+                        <h6> '.$ad.' </h6>
+                        <h5> '.$ucret.' TL</h5>
+                        
+                        </div>';
+            
+                        $i++;
+                    }
+        echo '</div>';
+        echo '</div>';
+
+        // echo '
+        // <ul>';
+        // foreach($AllRows as $rows)
+        // {
+        //     echo '<li> <img src = img/'.$rows['img_path'].' > <h3>Ucret : '.$rows['ucret'].'</br>
+        //     Stok Sayısı : '.$rows['stok_sayisi']. ' </br> Ürün Hakkında :'.$rows['aciklama'].'</h3> </li>';
+
+        // }
+            
+        // echo '</ul>';
+
+    }
+
+	public function MyAddressControl()
+    {
+        $ilce = $_POST['ilce'];
+        $mahalle = $_POST['mahalle'];
+        $sokak = $_POST['sokak'];
+        $tarif = $_POST['tarif'];
+        $fullAddress = "İlçe: ".$ilce . "\n" ."Mahalle: " .$mahalle . "\n" ."Sokak:".$sokak . "\n" ."Tarif :".$tarif ;
+        $emailForUpdatePassword =  $_SESSION["LoginUser"] ;
+        $this->DbLayer->UpdateAddress($fullAddress , $emailForUpdatePassword);
+        
+    }
+
+    public function MyInfo()
+    {
+        $currentUserEmail = $_SESSION["LoginUser"] ;
+        $allInfo = $this->DbLayer->GetInfo($currentUserEmail);
+        $name =  $allInfo['ad'];
+        $surname =  $allInfo['soyad'];
+        $email =  $allInfo['email'];
+        $surname =  $allInfo['soyad'];
+        $addresss = $$allInfo['adres'];
+        echo nl2br("Ad Soyad : \n" . $name . "\t".  $surname . "\n E-mail :\n" . $email . "\n");
+        echo nl2br("Adres: \n". $allInfo['adres']);
+
+    }
+
+
     public function Deliver()
     {
         $this->DbLayer->db->query("UPDATE eb_orders SET durum = 2 WHERE id=".$_GET["Oid"]."");
@@ -238,56 +392,60 @@ class DesignPanel
     }
     public function MiddleBottomProducts()
     {
-        $Cid = $_GET["Cid"];
-
-        $sql;
-        if($_SESSION["SelectedEBakkal"]=="")
-        {
-            if($Cid =="")
-                $sql = "SELECT * FROM eb_products";
-            else
-                $sql = "SELECT * FROM eb_products WHERE cat_id = ".$Cid;
-        }
-        else
-        {
-            if($Cid == "")
-                $sql = "SELECT * FROM eb_products WHERE ebakkal_id = ".$_SESSION["SelectedEBakkal"];
-            else
-                $sql = "SELECT * FROM eb_products WHERE ebakkal_id = ".$_SESSION["SelectedEBakkal"] ." AND cat_id = ".$Cid;
-        }
-        $i = 0;
-        $query = $this->DbLayer->db->prepare($sql);
-        $query->execute();
-        $listele = $query->fetchAll();
-
         echo '<div style="margin-bottom:10px;" class ="row">';
-        foreach($listele as $liste)
-        {
-            $ad = $liste["ad"];
-            $ucret = $liste["ucret"];
-            $id = $liste["id"];
-            $img_path = $liste["img_path"];
-            if(!file_exists("uploads/".$img_path))
-                $img_path = "gorsel_yok.png";
+        switch($_GET["Pg"])
+        {   
+            case "SearchProduct":
 
-            //echo $i. "<br/>";
-            echo '<div  class="text-center card col-sm-3">
-            <img style="min-height:150px;height:150px;" src="uploads/'.$img_path.'" alt="Ürün Resmi Yok" class="rounded img-thumbnail"> 
-            <h6> '.$ad.' </h6>
-            <hr/>
-            <h5> '.$ucret.' TL</h5>
-            <a role="button" style="color:white; margin-bottom:10px;" href="index.php?Pg=AddBasket&ProdID='.$id.'" class="btn btn-dark">Sepete Ekle</a>
-            </div>';
+            break;
 
-            $i++;
+            default:
+                    $Cid = $_GET["Cid"];
+                    $sql;
+                    if($_SESSION["SelectedEBakkal"]=="")
+                    {
+                        if($Cid =="")
+                            $sql = "SELECT * FROM eb_products";
+                        else
+                            $sql = "SELECT * FROM eb_products WHERE cat_id = ".$Cid;
+                    }
+                    else
+                    {
+                        if($Cid == "")
+                            $sql = "SELECT * FROM eb_products WHERE ebakkal_id = ".$_SESSION["SelectedEBakkal"];
+                        else
+                            $sql = "SELECT * FROM eb_products WHERE ebakkal_id = ".$_SESSION["SelectedEBakkal"] ." AND cat_id = ".$Cid;
+                    }
+                    $i = 0;
+                    $query = $this->DbLayer->db->prepare($sql);
+                    $query->execute();
+                    $listele = $query->fetchAll();
+            
+                    
+                    foreach($listele as $liste)
+                    {
+                        $ad = $liste["ad"];
+                        $ucret = $liste["ucret"];
+                        $id = $liste["id"];
+                        $img_path = $liste["img_path"];
+                        if(!file_exists("uploads/".$img_path))
+                            $img_path = "gorsel_yok.png";
+            
+                        //echo $i. "<br/>";
+                        echo '<div  class="text-center card col-sm-3">
+                        <img style="min-height:150px;height:150px;" src="uploads/'.$img_path.'" alt="Ürün Resmi Yok" class="rounded img-thumbnail"> 
+                        <h6> '.$ad.' </h6>
+                        <hr/>
+                        <h5> '.$ucret.' TL</h5>
+                        <a role="button" style="color:white; margin-bottom:10px;" href="index.php?Pg=AddBasket&ProdID='.$id.'" class="btn btn-dark">Sepete Ekle</a>
+                        </div>';
+            
+                        $i++;
+                    }
+            break;
+
         }
         echo '</div>';
-        
-
-
-
-
-    
     }
     public function AddProductControl()
     {
@@ -507,7 +665,7 @@ class DesignPanel
             <a href="index.php?Pg=MyAddress" id="navbarDropdownSiparislerim" role="button"  aria-haspopup="true" aria-expanded="false">Adresim</a>
             </li>
             <li>
-            <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Siparişlerim </a>';
+            <a href="index.php?Pg=MyOrders" id="navbarDropdownSiparislerim" role="button"  aria-haspopup="true" aria-expanded="false">Siparişlerim </a>';
             
             echo ' 
             </li>
@@ -935,11 +1093,6 @@ class DesignPanel
 
     }
 
-    public function MyAddressControl()
-    {
-        
-    }
-
     public function LostPasswordControl(){
         $email = $_POST['email'];
      
@@ -984,7 +1137,7 @@ class DesignPanel
                    <div class="panel panel-default">
                      <div class="panel-body">
                        <div class="text-center">
-                         <h3><i class="fa fa-lock fa-4x"></i></h3>
+                         <h3><img src="./img/lp.png" width="128" height="128" alt="Şifremi Unuttum" title="Şifremi Unuttum" /></h3>
                          <h2 class="text-center">Şifremi Unuttum?</h2>
                          <p>Şifrenizi buraya mail adresinizi yazarak sıfırlayabilirsiniz.</p>
                          <div class="panel-body">
@@ -993,7 +1146,7 @@ class DesignPanel
            
                              <div class="form-group">
                                <div class="input-group">
-                                 <span class="input-group-addon"><i class="glyphicon glyphicon-envelope color-blue"></i></span>
+                               <span class="input-group-addon">@</span>
                                  <input id="email" name="email" placeholder="E-mail Adresi" class="form-control"  type="email">
                                </div>
                              </div>
@@ -1100,7 +1253,19 @@ class DesignPanel
             case "FinishTransaction":
             $this->FinishTransaction();
             break;
+
+            case "MyInfo":
+            $this->MyInfo();
+            break;
             
+            case "SearchProduct":
+            $this->SearchProduct();
+            break;
+
+            case "MyOrders":
+            $this->MyOrders();
+            break;
+
             default:
             $this->CarouselArea();
             break;
