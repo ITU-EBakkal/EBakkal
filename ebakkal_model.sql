@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 09 Ara 2017, 10:31:36
+-- Üretim Zamanı: 09 Ara 2017, 11:17:48
 -- Sunucu sürümü: 5.7.17-log
 -- PHP Sürümü: 7.1.1
 
@@ -34,6 +34,13 @@ CREATE TABLE `eb_baskets` (
   `count` int(11) NOT NULL DEFAULT '1',
   `is_active` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_baskets`
+--
+
+INSERT INTO `eb_baskets` (`id`, `ebakkal_id`, `prod_id`, `user_id`, `count`, `is_active`) VALUES
+(34, 4, 6, 6, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -119,7 +126,8 @@ CREATE TABLE `eb_orders` (
 
 INSERT INTO `eb_orders` (`id`, `ebakkal_id`, `user_id`, `tarih`, `durum`) VALUES
 (13, 4, 6, '2017-12-09 13:06:08', 1),
-(14, 4, 6, '2017-12-09 13:07:19', 1);
+(14, 4, 6, '2017-12-09 13:07:19', 1),
+(15, 4, 6, '2017-12-09 13:47:07', 1);
 
 -- --------------------------------------------------------
 
@@ -140,7 +148,13 @@ CREATE TABLE `eb_order_details` (
 
 INSERT INTO `eb_order_details` (`id`, `order_id`, `product_id`, `product_count`) VALUES
 (13, 13, 13, 1),
-(14, 14, 7, 1);
+(14, 14, 7, 1),
+(15, 15, 13, 1),
+(16, 15, 6, 1),
+(17, 15, 7, 1),
+(18, 15, 10, 1),
+(19, 15, 11, 1),
+(20, 15, 12, 1);
 
 -- --------------------------------------------------------
 
@@ -297,7 +311,8 @@ CREATE TABLE `eb_users` (
 INSERT INTO `eb_users` (`id`, `email`, `password`, `is_ebakkal`, `ad`, `soyad`, `il`, `ilce`, `adres`) VALUES
 (4, 'mrtkprc@gmail.com', '1', 1, 'Mert', 'Koprucu', 34, 0, ''),
 (6, 'mrtkprc@yandex.com', '123456', 0, '', '', 0, 0, ''),
-(10, 'tugrulkurt@gmail.com', '123456', 1, 'Tuğrul', 'KURT', 34, 0, '');
+(10, 'tugrulkurt@gmail.com', '123456', 1, 'Tuğrul', 'KURT', 34, 0, ''),
+(11, 'l@gmail.com', '1', 0, 'Latif', 'Reis', 34, 0, 'Yeşilcaminin karşısı');
 
 --
 -- Dökümü yapılmış tablolar için indeksler
@@ -360,7 +375,7 @@ ALTER TABLE `eb_users`
 -- Tablo için AUTO_INCREMENT değeri `eb_baskets`
 --
 ALTER TABLE `eb_baskets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_categories`
 --
@@ -375,12 +390,12 @@ ALTER TABLE `eb_ebakkals`
 -- Tablo için AUTO_INCREMENT değeri `eb_orders`
 --
 ALTER TABLE `eb_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_order_details`
 --
 ALTER TABLE `eb_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_products`
 --
@@ -390,7 +405,7 @@ ALTER TABLE `eb_products`
 -- Tablo için AUTO_INCREMENT değeri `eb_users`
 --
 ALTER TABLE `eb_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

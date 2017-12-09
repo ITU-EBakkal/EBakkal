@@ -391,7 +391,7 @@ class DesignPanel
         <div class="card">
         <ul id="LoginMenuArea">
             <li>
-            <a href="#" id="navbarDropdownSiparislerim" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Email Ayarları</a>
+            <a href="index.php?Pg=MyInfo" id="navbarDropdownSiparislerim" role="button"  aria-haspopup="true" aria-expanded="false">Bilgilerim</a>
             </li>
             <li>
             <a href="index.php?Pg=ChangePassword" id="navbarDropdownSiparislerim" role="button"  aria-haspopup="true" aria-expanded="false">Parolamı Değiştir</a>
@@ -409,7 +409,7 @@ class DesignPanel
             {
                 echo '
                 <li>
-                <a href="index.php?Pg=EBakkalPanel#checkOrders">E-Bakkal Panel</a> ';
+                <a style="font-weight:bold;" href="index.php?Pg=EBakkalPanel#checkOrders">E-Bakkal Panel</a> ';
                 $this->DbLayer->GetActiveOrders();
                 echo '
                 </li> 
@@ -475,8 +475,34 @@ class DesignPanel
     }
     function SignupControl()
     {
-        $first_name = $_POST["isim"];
-        $last_name = $_POST["soyisim"];
+        $Name = $_POST['isim'];
+        $Surname = $_POST['soyisim'];
+        $Email = $_POST['email'];
+        $Password = $_POST['parola'];
+        $PasswordApprove =$_POST['parolaonayla'];
+        $Province = $_POST['il'];
+        $Address = $_POST['adres'];
+        
+        if($Password != $PasswordApprove)
+        {
+            echo 'Parolalar eşleşmemektedir. Lütfen aynı parolaları giriniz';
+            header("Refresh:1; url=index.php?Pg=Signup ");
+        }
+
+        else if($this->DbLayer->EmailControl($Email) == 1)
+        {
+            echo $Email . '   zaten kullanılmaktadır. Lütfen farklı bir mail adresi giriniz';
+            header("Refresh:1; url=index.php?Pg=Signup ");
+        }
+        else
+        {
+            $this->DbLayer->AddUser($Name,$Surname,$Email,$Password, $Province,$Address );
+            echo 'Üyelik işleminiz başarılı bir şekilde gerçekleşti';
+            
+        }
+
+
+
     }
 
     function AddBasket()
@@ -568,7 +594,7 @@ class DesignPanel
         <div class="form-group">
           <label class="col-md-4 control-label" for="lastname">İsim</label>  
           <div class="col-md-5">
-          <input id="isim" name="isim" type="text" placeholder="İsminizi giriniz" class="form-control input-md" required="">
+          <input id="isim" name="isim" type="text" placeholder="İsmininizi giriniz" class="form-control input-md" required="">
             
           </div>
         </div>
@@ -619,16 +645,26 @@ class DesignPanel
           </div>
         </div>
         
+        <!-- Text input-->
+        <div class="form-group">
+          <label class="col-md-4 control-label" for="aciklama">Adres</label>
+          <div class="col-md-5">
+            <input id="parola" name="adres" type="text" style="height:150px" class="form-control input-md" required="">
+            
+          </div>
+        </div>
+        
+
         <!-- Multiple Radios (inline) -->
         <div class="form-group">
           <label class="col-md-4 control-label" for="gender">Üyelik Türü</label>
           <div class="col-md-4"> 
           <label class="radio-inline" for="gender-1">
-              <input type="radio" name="kullanici" id="gender-1" value="kullanici"checked="checked">
+              <input type="radio" name="kullanici" id="gender-1" value="0" >
               Kullanici
             </label>
             <label class="radio-inline" for="gender-0">
-              <input type="radio" name="bakkal" id="gender-0" value="bakkal" >
+              <input type="radio" name="kullanici" id="gender-0" value="1" >
               Bakkal
             </label> 
           </div>

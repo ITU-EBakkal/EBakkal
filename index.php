@@ -41,6 +41,7 @@ $DesignPanel = new DesignPanel;
 		  <select name="bakkal" style="margin-top:10px; width:350px; margin-bottom:10px;" class="custom-select form-control-lg">
        
       <?php
+      
       $DesignPanel->GetEBakkals();
       ?>
 
@@ -48,6 +49,7 @@ $DesignPanel = new DesignPanel;
       <button class="btn btn-primary btn-lg">Onayla</button> 
       
       <?php
+
       if($_SESSION["SelectedEBakkal"]!="")
         echo '<a href="index.php?Pg=QuitAll"><img alt="Tüm Bakkallardan Çık" title="Bakkallardan Çık" width=32 height=32 src="./img/logout.png" /> </a>';
       ?>

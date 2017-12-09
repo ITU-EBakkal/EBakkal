@@ -36,6 +36,17 @@ class DatabaseLayer
 		return $Number['count(email)'];
 	}
 
+	public function EmailControl($email)
+	{
+		$query = $this->db->prepare("SELECT count(email) FROM eb_users WHERE email=:email");
+        $query->bindValue(':email',$email);
+        $query->execute();
+		$emailNumber = $query->fetch(PDO::FETCH_ASSOC);
+		
+
+		return $emailNumber['count(email)'];
+	}
+
 	public function GetUserID($email)
 	{
 		$query = $this->db->prepare("SELECT id FROM eb_users WHERE email=:email");
@@ -65,6 +76,21 @@ class DatabaseLayer
 		$query->bindValue(':prod_id',$prod_id);
 		$query->bindValue(':user_id',$user_id);
 		
+		$query->execute();
+		
+	}
+	public function AddUser($Name,$Surname,$Email,$Password, $Province,$Address )
+	{
+		
+		
+		$query = $this->db->prepare("INSERT INTO eb_users (email, password,is_ebakkal, ad, soyad, il, adres) VALUES (:email,:password,:is_ebakkal,:name,:surname,:province,:address)");
+		$query->bindValue(':name',$Name);
+		$query->bindValue(':surname',$Surname);
+		$query->bindValue(':email',$Email);
+		$query->bindValue(':is_ebakkal',0);
+		$query->bindValue(':password',$Password);
+		$query->bindValue(':province',$Province);
+		$query->bindValue(':address',$Address);
 		$query->execute();
 		
 	}
