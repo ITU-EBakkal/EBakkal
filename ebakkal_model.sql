@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 27 Kas 2017, 20:36:06
+-- Üretim Zamanı: 09 Ara 2017, 10:31:36
 -- Sunucu sürümü: 5.7.17-log
 -- PHP Sürümü: 7.1.1
 
@@ -19,6 +19,21 @@ SET time_zone = "+00:00";
 --
 -- Veritabanı: `ebakkal_model`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `eb_baskets`
+--
+
+CREATE TABLE `eb_baskets` (
+  `id` int(11) NOT NULL,
+  `ebakkal_id` int(11) NOT NULL,
+  `prod_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `count` int(11) NOT NULL DEFAULT '1',
+  `is_active` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -94,9 +109,17 @@ CREATE TABLE `eb_orders` (
   `id` int(11) NOT NULL,
   `ebakkal_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `tarih` datetime NOT NULL,
-  `durum` int(11) NOT NULL
+  `tarih` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `durum` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_orders`
+--
+
+INSERT INTO `eb_orders` (`id`, `ebakkal_id`, `user_id`, `tarih`, `durum`) VALUES
+(13, 4, 6, '2017-12-09 13:06:08', 1),
+(14, 4, 6, '2017-12-09 13:07:19', 1);
 
 -- --------------------------------------------------------
 
@@ -107,8 +130,17 @@ CREATE TABLE `eb_orders` (
 CREATE TABLE `eb_order_details` (
   `id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
-  `product_id` int(11) NOT NULL
+  `product_id` int(11) NOT NULL,
+  `product_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_order_details`
+--
+
+INSERT INTO `eb_order_details` (`id`, `order_id`, `product_id`, `product_count`) VALUES
+(13, 13, 13, 1),
+(14, 14, 7, 1);
 
 -- --------------------------------------------------------
 
@@ -139,7 +171,8 @@ INSERT INTO `eb_products` (`id`, `ad`, `ucret`, `ebakkal_id`, `aciklama`, `stok_
 (9, 'Pirinç', 5.47, 10, 'Kırık Pirinç', 20, 14, 'pirinc.png', 1),
 (10, 'Kiraz 2', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1),
 (11, 'Kiraz 3', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1),
-(12, 'Kiraz 4', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1);
+(12, 'Kiraz 4', 1.94, 4, 'adsa', 999, 11, 'kiraz.PNG', 1),
+(13, 'Tereyağı 1 KG', 35, 4, '', 1, 11, '16903337_10155005245378187_294398666191129227_o.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -262,13 +295,19 @@ CREATE TABLE `eb_users` (
 --
 
 INSERT INTO `eb_users` (`id`, `email`, `password`, `is_ebakkal`, `ad`, `soyad`, `il`, `ilce`, `adres`) VALUES
-(4, 'mrtkprc@gmail.com', '123456', 1, 'Mert', 'Koprucu', 34, 0, ''),
+(4, 'mrtkprc@gmail.com', '1', 1, 'Mert', 'Koprucu', 34, 0, ''),
 (6, 'mrtkprc@yandex.com', '123456', 0, '', '', 0, 0, ''),
 (10, 'tugrulkurt@gmail.com', '123456', 1, 'Tuğrul', 'KURT', 34, 0, '');
 
 --
 -- Dökümü yapılmış tablolar için indeksler
 --
+
+--
+-- Tablo için indeksler `eb_baskets`
+--
+ALTER TABLE `eb_baskets`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Tablo için indeksler `eb_categories`
@@ -318,6 +357,11 @@ ALTER TABLE `eb_users`
 --
 
 --
+-- Tablo için AUTO_INCREMENT değeri `eb_baskets`
+--
+ALTER TABLE `eb_baskets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+--
 -- Tablo için AUTO_INCREMENT değeri `eb_categories`
 --
 ALTER TABLE `eb_categories`
@@ -331,17 +375,17 @@ ALTER TABLE `eb_ebakkals`
 -- Tablo için AUTO_INCREMENT değeri `eb_orders`
 --
 ALTER TABLE `eb_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_order_details`
 --
 ALTER TABLE `eb_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_products`
 --
 ALTER TABLE `eb_products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_users`
 --

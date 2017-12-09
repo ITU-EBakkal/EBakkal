@@ -14,12 +14,52 @@ class DesignPanel
     }
     public function GiveAnOrder()
     {
-        if(!($this->DbLayer->IsEBakkal($_SESSION["LoginUser"])))
-        return;
-        echo '
-        <div class="col-sm-9">';
+        echo '<div class="col-sm-9">';
 
+        $query = $this->DbLayer->db->prepare("SELECT count(id) as adet FROM eb_baskets WHERE user_id=:user_id ");
+        $query->bindValue(':user_id',$this->DbLayer->GetUserID($_SESSION["LoginUser"]));
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+        $adet = $rows[0]["adet"];
+
+        if($adet <=0)
+            return;
+
+
+        $query = $this->DbLayer->db->prepare("INSERT INTO eb_orders (ebakkal_id,user_id) VALUES (:ebakkal_id,:user_id)");
+        $query->bindValue(':ebakkal_id',$_SESSION["SelectedEBakkal"]);
+        $query->bindValue(':user_id',$this->DbLayer->GetUserID($_SESSION["LoginUser"]));
+        $query->execute();
+
+
+        $query = $this->DbLayer->db->prepare("SELECT id FROM eb_orders WHERE user_id=:user_id ORDER BY id DESC LIMIT 1");
+        $query->bindValue(':user_id',$this->DbLayer->GetUserID($_SESSION["LoginUser"]));
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+        $order_id = $rows[0]["id"];
+
+        foreach($this->DbLayer->db->query('SELECT bsk.id as bsk_id,prd.id as pid,prd.ad as ad,bsk.count,prd.ucret as fiyat,bsk.count * prd.ucret as toplam FROM `eb_baskets` bsk INNER JOIN eb_products prd ON prd.id = bsk.prod_id WHERE bsk.user_id='.$this->DbLayer->GetUserID($_SESSION["LoginUser"]).' AND bsk.ebakkal_id ='.$_SESSION["SelectedEBakkal"].' ') as $listele) 
+        {
+            $this->DbLayer->db->query('INSERT INTO eb_order_details (order_id,product_id,product_count) VALUES ('.$order_id.','.$listele["pid"].','.$listele["count"].')');
+            $this->DbLayer->db->query('DELETE FROM eb_baskets WHERE id = '.$listele["bsk_id"].' ');
+        }
+
+        echo '
+        <div class="alert alert-info" role="alert">
+        Siparişiniz İlgili Ebakkala Yönlendirildi...
+        </div>';
+        header("Refresh:1; url=index.php?Pg=MyOrders");
+        
         echo '</div>';
+    }
+    
+    public function ExcludeFromBasket()
+    {
+        $Pid = $_GET["Pid"];
+
+        $this->DbLayer->db->query("DELETE FROM eb_baskets WHERE id=".$Pid."");
+        header("Refresh:1; url=index.php?Pg=MyBasketArea");
+        
     }
 
     public function EBakkalPanel()
@@ -157,12 +197,6 @@ class DesignPanel
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
         $imageFileType = strtolower(substr($_FILES["resim_yukleme"]["name"],-3));
-        // echo "Ürün Adı : ". $urunadi." <br/>";
-        // echo "Ürün Ücreti : ". $urun_ucreti." <br/>";
-        // echo "Kategori : ". $kategori." <br/>";
-        // echo "Stok Sayısı : ". $stoksayisi." <br/>";
-        // echo "Açıklama : ". $aciklama." <br/>";
-        // echo "Resim : ". $target_file ." <br/>";
 
         if (file_exists($target_file)) {
             echo '
@@ -474,6 +508,9 @@ class DesignPanel
 
         if($_SESSION["SelectedEBakkal"]<=0 || $_SESSION["LoginUser"]=="")
         {
+            echo '<div class="alert alert-danger" role="alert">
+            Bakkal Seçmeden, Sepetteki Ürünlerinizi Göremezsiniz.
+            </div>';
             echo '</div></div>';
             
             return;
@@ -490,14 +527,14 @@ class DesignPanel
           </tr>
         </thead>
         <tbody>';
-        foreach($this->DbLayer->db->query('SELECT prd.ad as ad,bsk.count,prd.ucret as fiyat,bsk.count * prd.ucret as toplam FROM `eb_baskets` bsk INNER JOIN eb_products prd ON prd.id = bsk.prod_id WHERE bsk.user_id='.$this->DbLayer->GetUserID($_SESSION["LoginUser"]).' AND bsk.ebakkal_id ='.$_SESSION["SelectedEBakkal"].' ') as $listele) 
+        foreach($this->DbLayer->db->query('SELECT bsk.id,prd.ad as ad,bsk.count,prd.ucret as fiyat,bsk.count * prd.ucret as toplam FROM `eb_baskets` bsk INNER JOIN eb_products prd ON prd.id = bsk.prod_id WHERE bsk.user_id='.$this->DbLayer->GetUserID($_SESSION["LoginUser"]).' AND bsk.ebakkal_id ='.$_SESSION["SelectedEBakkal"].' ') as $listele) 
         {
             echo '
             <tr>
               <th scope="row">'.$listele["ad"].'</th>
-              <td>'.$listele["count"].'</td>
+              <td><input disabled style="width:70px; text-align:right;" class="form-control" type="number" value="'.$listele["count"].'" id="example-number-input"></td>
               <td>'.number_format($listele["fiyat"],3).'</td>
-              <td>'.number_format($listele["toplam"],3).'</td>
+              <td>'.number_format($listele["toplam"],3).'<span style="float:right;"><a href="index.php?Pg=ExcludeFromBasket&Pid='.$listele["id"].'"><img src="./img/del_bsk.png" alt="Sil" title="Ürünü Kaldır"/> </a></span></td>
             </tr>';
         }
         $query = $this->DbLayer->db->prepare('SELECT SUM(bsk.count * prd.ucret) as toplam FROM `eb_baskets` bsk INNER JOIN eb_products prd ON prd.id = bsk.prod_id WHERE bsk.user_id='.$this->DbLayer->GetUserID($_SESSION["LoginUser"]).' AND bsk.ebakkal_id ='.$_SESSION["SelectedEBakkal"].' ');
@@ -910,6 +947,10 @@ class DesignPanel
 
             case "ChangePasswordControl":
             $this->ChangePasswordControl();
+            break;
+
+            case "ExcludeFromBasket":
+            $this->ExcludeFromBasket();
             break;
             
             default:
