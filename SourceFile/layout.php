@@ -12,6 +12,16 @@ class DesignPanel
         $this->DbLayer = new DatabaseLayer;
         $this->isAdmin = false;
     }
+    public function Deliver()
+    {
+        $this->DbLayer->db->query("UPDATE eb_orders SET durum = 2 WHERE id=".$_GET["Oid"]."");
+        header("Refresh:1; url=index.php?Pg=EBakkalPanel");
+    }
+    public function FinishTransaction()
+    {
+        $this->DbLayer->db->query("UPDATE eb_orders SET durum = 0 WHERE id=".$_GET["Oid"]."");
+        header("Refresh:1; url=index.php?Pg=EBakkalPanel");
+    }
     public function GiveAnOrder()
     {
         echo '<div class="col-sm-9">';
@@ -87,8 +97,105 @@ class DesignPanel
         echo '
         </div>
         <div class="tab-pane" id="checkOrders" role="tabpanel">
-        Mert
         
+        ';
+        $eb_id = $this->DbLayer->GetUserID($_SESSION["LoginUser"]);
+        foreach($this->DbLayer->db->query('SELECT id,tarih,user_id,durum FROM eb_orders WHERE ebakkal_id = '.$eb_id.' AND durum <> 0 ORDER BY durum ASC,id DESC') as $listele)
+        {
+            $ord_id = $listele["id"];
+            $tarih  = $listele["tarih"];
+            $user_id = $listele["user_id"];
+            $durum = $listele["durum"];
+            $que_usr = $this->DbLayer->db->prepare('SELECT id,ad,soyad,adres FROM eb_users WHERE id = 4');
+            $que_usr->execute();
+            $rows_user = $que_usr->fetchAll(PDO::FETCH_ASSOC);
+
+            echo '<div style="margin-top:10px;margin-bottom:30px;" class="card col-sm-12"><fieldset><legend>'.$tarih.' |';
+            
+            if($durum==1)
+            {
+                echo '<span style="margin-left:5px;" class="badge badge-danger"> Hazırlanıyor</span> ';
+            }
+            else if($durum == 2)
+            {
+                echo '<span style="margin-left:5px;" class="badge badge-warning"> Sevkiyatta</span> ';
+            }
+            
+
+            if($durum==1)
+                echo '<a style="margin-right:15px;" href="index.php?Pg=Deliver&Oid='.$ord_id.'"> <img src="./img/deliver.png" width="32" height="32" alt="Sevkiyata Gönder" title="Sevkiyata Gönder" /></a>';
+            else if($durum ==2)
+            {
+                echo '<a style="margin-right:15px;" href="index.php?Pg=FinishTransaction&Oid='.$ord_id.'"> <img src="./img/finish.png" width="32" height="32" alt="İşlemi Bitir" title="İşlemi Bitir" /></a>';
+            }
+            echo '
+            </legend>
+            ';
+
+            echo '
+
+            <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Bilgiler</th>
+                <th>Değerler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Müşternin Adı</th>
+                <td>'.$rows_user[0]["ad"].'</td>
+              </tr>
+              <tr>
+              <th scope="row">Müşternin Soyadı</th>
+              <td>'.$rows_user[0]["soyad"].'</td>
+            </tr>
+            <tr>
+                <th scope="row">Adres</th>
+                <td>'.nl2br($rows_user[0]["adres"]).'</td>
+            </tr>
+            </tbody>
+          </table>
+            
+            ';
+            
+            echo '
+            <table class="table table-hover">
+            <thead>
+              <tr>
+                <th scope="col">Ürün Adı</th>
+                <th scope="col">Adet</th>
+                <th scope="col">Fiyat</th>
+                <th scope="col">Toplam</th>
+              </tr>
+            </thead>
+            <tbody>';
+            foreach($this->DbLayer->db->query('SELECT od.product_count,p.ad,p.ucret,p.ucret * od.product_count as tutar FROM eb_order_details od INNER JOIN eb_products p ON p.id = od.product_id WHERE od.order_id = '.$ord_id.'') as $listele) 
+            {
+                echo '
+                <tr>
+                  <th scope="row">'.$listele["ad"].'</th>
+                  <td><input disabled style="width:70px; text-align:right;" class="form-control" type="number" value="'.$listele["product_count"].'" id="example-number-input"></td>
+                  <td>'.number_format($listele["ucret"],3).'</td>
+                  <td>'.number_format($listele["tutar"],3).'</td>
+                </tr>';
+            }
+            $query = $this->DbLayer->db->prepare('SELECT SUM(p.ucret * od.product_count) as top_tutar FROM eb_order_details od INNER JOIN eb_products p ON p.id = od.product_id WHERE od.order_id = '.$ord_id.'');
+            $query->execute();
+            $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+            
+              echo '
+            </tbody>
+          </table>
+            ';
+            echo '<span class="col-sm-12" style="float:right;color:orange;text-align:right;font-weight:bold; background-color:#333; margin:auto; font-size:26px;">'.number_format($rows[0]["top_tutar"],3).' TL</span>';
+            echo '</fieldset>
+            </div>';
+            
+        } 
+
+
+        echo '
         </div>
         
        </div>
@@ -107,13 +214,13 @@ class DesignPanel
                 </ol>
                 <div class="carousel-inner" role="listbox">
                 <div class="carousel-item active">
-                    <div style="align-items:center; justify-content: center;display: flex;"><img  class="d-block img-fluid" src="./img/bsk_1.png" alt="First slide"></div>
+                    <div style="align-items:center; justify-content: center;display: flex;"><a href="index.php?Pg=FetchProduct&Cid=41"><img  class="d-block img-fluid" src="./img/bsk_1.png" alt="First slide"></a></div>
                 </div>
                 <div class="carousel-item">
-                    <div style="align-items:center; justify-content: center;display: flex;"><img class="d-block img-fluid" src="./img/bsk_2.png" alt="Second slide"></div>
+                    <div style="align-items:center; justify-content: center;display: flex;"><a href="index.php?Pg=FetchProduct&Cid=16"><img class="d-block img-fluid" src="./img/bsk_2.png" alt="Second slide"></a></div>
                 </div>
                 <div class="carousel-item">
-                    <div style="align-items:center; justify-content: center;display: flex;"><img class="d-block img-fluid" src="./img/bsk_3.png" alt="Third slide"></div>
+                    <div style="align-items:center; justify-content: center;display: flex;"><a href="index.php?Pg=FetchProduct&Cid=11"><img class="d-block img-fluid" src="./img/bsk_3.png" alt="Third slide"></a></div>
                 </div>
                 </div>
                 <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -409,7 +516,7 @@ class DesignPanel
             {
                 echo '
                 <li>
-                <a style="font-weight:bold;" href="index.php?Pg=EBakkalPanel#checkOrders">E-Bakkal Panel</a> ';
+                <a style="font-weight:bold;" href="index.php?Pg=EBakkalPanel">E-Bakkal Panel</a> ';
                 $this->DbLayer->GetActiveOrders();
                 echo '
                 </li> 
@@ -573,9 +680,6 @@ class DesignPanel
         ';
 
         echo '<span style="margin:auto; font-size:22px; font-weight:bold;">Toplam : '.number_format($rows[0]["toplam"],2).'</span>';
-
-        echo 'Adres Bilgileriniz:<br/>';
-
         echo '<a class="btn btn-primary" style="color:white; font-weight:bold;" href="index.php?Pg=GiveAnOrder" role="button">Siparişi Ver</a>';
         echo '</div></div>';
     }
@@ -987,6 +1091,14 @@ class DesignPanel
 
             case "ExcludeFromBasket":
             $this->ExcludeFromBasket();
+            break;
+
+            case "Deliver":
+            $this->Deliver();
+            break;
+
+            case "FinishTransaction":
+            $this->FinishTransaction();
             break;
             
             default:
