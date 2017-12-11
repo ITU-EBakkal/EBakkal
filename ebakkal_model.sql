@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: localhost
--- Üretim Zamanı: 11 Ara 2017, 18:50:49
+-- Üretim Zamanı: 11 Ara 2017, 18:54:32
 -- Sunucu sürümü: 5.7.17-log
 -- PHP Sürümü: 7.1.1
 
@@ -113,6 +113,13 @@ CREATE TABLE `eb_orders` (
   `durum` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Tablo döküm verisi `eb_orders`
+--
+
+INSERT INTO `eb_orders` (`id`, `ebakkal_id`, `user_id`, `tarih`, `durum`) VALUES
+(19, 4, 4, '2017-12-11 21:53:00', 0);
+
 -- --------------------------------------------------------
 
 --
@@ -125,6 +132,13 @@ CREATE TABLE `eb_order_details` (
   `product_id` int(11) NOT NULL,
   `product_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Tablo döküm verisi `eb_order_details`
+--
+
+INSERT INTO `eb_order_details` (`id`, `order_id`, `product_id`, `product_count`) VALUES
+(26, 19, 11, 1);
 
 -- --------------------------------------------------------
 
@@ -280,7 +294,7 @@ CREATE TABLE `eb_users` (
 --
 
 INSERT INTO `eb_users` (`id`, `email`, `password`, `is_ebakkal`, `ad`, `soyad`, `cep_tel`, `il`, `ilce`, `adres`) VALUES
-(4, 'mrtkprc@gmail.com', '1', 1, 'Mert', 'Koprucu', '', 34, 0, 'İlçe: Rasathan\nMahalle: Çukur\nSokak:Kazma\nTarif :Vartolu adresi'),
+(4, 'mrtkprc@gmail.com', '1', 1, 'Mert', 'Koprucu', '', 34, 0, 'İlçe: Rasathane\r\nMahalle: Mahallesi\r\nSokak:Sokaki\r\nTarif :Tarifi'),
 (6, 'mrtkprc@yandex.com', '123456', 0, '', '', '', 0, 0, 'İlçe: Ayazağa\nMahalle: -\nSokak:-\nTarif :İstanbul Teknik Üniversitesi Gölet Yurtları'),
 (10, 'tugrulkurt@gmail.com', '123456', 1, 'Tuğrul', 'KURT', '', 34, 0, ''),
 (11, 'l@gmail.com', '1', 0, 'Latif', 'Reis', '', 34, 0, 'Yeşilcaminin karşısı');
@@ -346,7 +360,7 @@ ALTER TABLE `eb_users`
 -- Tablo için AUTO_INCREMENT değeri `eb_baskets`
 --
 ALTER TABLE `eb_baskets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_categories`
 --
@@ -361,12 +375,12 @@ ALTER TABLE `eb_ebakkals`
 -- Tablo için AUTO_INCREMENT değeri `eb_orders`
 --
 ALTER TABLE `eb_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_order_details`
 --
 ALTER TABLE `eb_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 --
 -- Tablo için AUTO_INCREMENT değeri `eb_products`
 --
