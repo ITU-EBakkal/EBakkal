@@ -100,13 +100,14 @@ class DatabaseLayer
         $query->execute();
 	}
 
-	public function AddUserBasket($ebakkal_id,$prod_id,$user_id)
+	public function AddUserBasket($ebakkal_id,$prod_id,$user_id,$count=1)
 	{
-		$query = $this->db->prepare("INSERT INTO eb_baskets (ebakkal_id,prod_id,user_id) VALUES (:ebakkal_id,:prod_id,:user_id)");
+		$query = $this->db->prepare("INSERT INTO eb_baskets (ebakkal_id,prod_id,user_id,count) VALUES (:ebakkal_id,:prod_id,:user_id,:count)");
 		$query->bindValue(':ebakkal_id',$ebakkal_id);
 		$query->bindValue(':prod_id',$prod_id);
 		$query->bindValue(':user_id',$user_id);
-		
+		$query->bindValue(':count',$count);
+
 		$query->execute();
 		
 	}

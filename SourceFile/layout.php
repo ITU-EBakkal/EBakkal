@@ -13,6 +13,100 @@ class DesignPanel
         $this->isAdmin = false;
     }
 
+    public function AddBasketFromProductDetail()
+    {
+
+        if($_SESSION["SelectedEBakkal"]<=0)
+        {
+            echo '
+            <div class="alert alert-danger" role="alert">
+            Bakkal Seçmediniz!!!<br/>
+            Lütfen Bir Bakkal Seçiniz...
+          </div>';
+          return;
+        }
+
+        $ProdID = $_GET["ProdID"];
+        $ebakkal_id = $_SESSION["SelectedEBakkal"];
+        $user_id = $this->DbLayer->GetUserID($_SESSION["LoginUser"]);
+        $adet = $_POST["adet"];
+
+        $this->DbLayer->AddUserBasket($ebakkal_id,$ProdID,$user_id,$adet);
+        header("Refresh:1; url=index.php?Pg=ProductDetail&Pid=".$ProdID."");
+
+    }
+
+    public function ProductDetail()
+    {
+        $Pid=$_GET["Pid"];
+        
+        $query = $this->DbLayer->db->prepare("SELECT * FROM eb_products WHERE id=:id");
+        $query->bindValue(':id',$Pid);
+        $query->execute();
+        $rows = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $ad = $rows[0]["ad"];
+        $ucret = number_format($rows[0]["ucret"],3);
+        $aciklama = $rows[0]["aciklama"];
+        $img_path = $rows[0]["img_path"];
+
+        echo '<div class="col-sm-9">';
+        echo '<div class="card">';
+
+        echo '<div class="row">';
+
+            echo '<div class="col-sm-4">';
+            echo '<img style="margin:10px;" width="240" height="260" src="img/'.$img_path.'" class="border" alt="Responsive image">';
+            echo '</div>';
+
+            echo '<div class="col-sm-8">';
+                echo '<div style="margin-top:10px;">';
+                echo '<h4>'.$ad.'</h4>';
+                echo '
+                <table class="table table-hover">
+                <tbody>
+                  <tr>
+                    <th style="float:right; font-size:36px; font-weight:bold;" scope="row">'.$ucret.' <img style="margin-top:-10px;" width="48" height="48" src="img/tl.png" /></th>
+                  </tr>
+                  <tr>
+                  <th>
+                    <form action="index.php?Pg=AddBasketFromProductDetail&ProdID='.$Pid.'" method="POST">
+                    <div style="float:right;">
+                    <input name="adet" value="1" style="width:80px; font-weight:bold; text-align:right; float:left;" class="form-control input-lg" id="inputlg" type="number">
+                    <button role="button" style="color:white; float:left; margin-left:20px;"  class="btn btn-success">Sepete Ekle</button>
+                    </div>
+                    </form>
+                  </th>
+                  </tr>
+                </tbody>
+              </table>
+                
+                
+                ';
+                
+                echo '</div>';
+
+            echo '</div>';
+
+        echo '</div>';
+
+        echo '<div class="row">';
+        
+                    echo '<div class="col-sm-12">';
+                    echo '<div style="margin:20px;">';
+                        echo '<hr/>';
+                        echo '<h4>'.$aciklama.'</h4>';
+                    echo '</div>';
+                    echo '</div>';
+
+        echo '</div>';
+        echo '</div>';
+
+
+        
+
+    }
+
     public function MyOrders()
     {
         echo '<div class="col-sm-9">';
@@ -396,6 +490,7 @@ class DesignPanel
         switch($_GET["Pg"])
         {   
             case "SearchProduct":
+            case "ProductDetail":
 
             break;
 
@@ -431,12 +526,11 @@ class DesignPanel
                         if(!file_exists("uploads/".$img_path))
                             $img_path = "gorsel_yok.png";
             
-                        //echo $i. "<br/>";
                         echo '<div  class="text-center card col-sm-3">
                         <img style="min-height:150px;height:150px;" src="uploads/'.$img_path.'" alt="Ürün Resmi Yok" class="rounded img-thumbnail"> 
-                        <h6> '.$ad.' </h6>
+                        <h6> <a style="color:black;" href="index.php?Pg=ProductDetail&Pid='.$id.'">'.$ad.' </a></h6>
                         <hr/>
-                        <h5> '.$ucret.' TL</h5>
+                        <a style="color:darkgreen;" href="index.php?Pg=ProductDetail&Pid='.$id.'"><h5> '.$ucret.' TL</h5></a>
                         <a role="button" style="color:white; margin-bottom:10px;" href="index.php?Pg=AddBasket&ProdID='.$id.'" class="btn btn-dark">Sepete Ekle</a>
                         </div>';
             
@@ -1264,6 +1358,14 @@ class DesignPanel
 
             case "MyOrders":
             $this->MyOrders();
+            break;
+
+            case "ProductDetail":
+            $this->ProductDetail();
+            break;
+
+            case "AddBasketFromProductDetail":
+            $this->AddBasketFromProductDetail();
             break;
 
             default:
